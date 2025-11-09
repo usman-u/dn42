@@ -1,0 +1,12 @@
+{%- if common.community_lists %}
+{%- for community_list in common.community_lists %}
+bgp community-list standard {{ community_list.name }} seq {{ community_list.seq }} permit {{ community_list.value }}
+{%- endfor %}
+{%- endif %}
+{%- if common.as_path_acls %}
+{%- for as_path_acl in common.as_path_acls %}
+bgp as-path access-list {{ as_path_acl.name }} seq {{ as_path_acl.seq }} permit {{ as_path_acl.value }}
+{%- endfor %}
+{%- endif %}
+
+

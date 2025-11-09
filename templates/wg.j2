@@ -1,0 +1,15 @@
+# {{ peer.name }} on {{ node.name }}
+
+[Interface]
+PrivateKey = {{ node.wg_privkey }}
+Address = {{ peer.wg_address if peer.wg_address else "fe80::" + peer.asn[6:] + "/64" }}
+{% if peer.wg_listenport is defined -%}{% if peer.wg_listenport == "auto" -%}
+ListenPort = {{ "5" + peer.asn[6:] }}{%- elif peer.wg_listenport -%}
+ListenPort = {{ peer.wg_listenport }}{% endif %}{% endif %}
+Table = {{ common.wg.table }}
+
+[Peer]
+PublicKey = {{ peer.wg_pubkey }}
+Endpoint = {{ peer.wg_endpoint }}
+AllowedIPs = {{ common.wg.allowed_ips}}
+PersistentKeepalive = {{ common.wg.persistent_keepalive }}
