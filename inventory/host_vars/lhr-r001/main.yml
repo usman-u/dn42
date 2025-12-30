@@ -46,7 +46,7 @@ bgp_networks:
 # BGP Peers
 bgp_peers:
   # Non-DN42 peer (simple configuration)
-  - name: UPSTREAM
+  - name: ERX
     neighbor: "169.254.0.1"
     remote_as: "65064"
     type: simple  # Simple peer without DN42 route-maps

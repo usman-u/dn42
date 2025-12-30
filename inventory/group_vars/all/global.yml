@@ -52,6 +52,9 @@ bgp_large_community_lists:
   - name: LCL-USMAN-TRANSIT
     seq: 10
     value: "4242421869:100:2"
+  - name: LCL-USMAN-EXPORT
+    seq: 10
+    value: "4242421869:100:[1-2]"
 
 # iBGP Mesh Configuration
 ibgp_mesh_enabled: true
@@ -84,7 +87,7 @@ route_maps:
       - seq: 10
         action: permit
         match_prefix_list: DN42-ALL
-        match_large_community: LCL-USMAN-NATIVE LCL-USMAN-TRANSIT
+        match_large_community: LCL-USMAN-EXPORT
       - seq: 500
         action: deny
 
@@ -93,6 +96,6 @@ route_maps:
       - seq: 10
         action: permit
         match_ipv6_prefix_list: DN42-ALL-V6
-        match_large_community: LCL-USMAN-NATIVE LCL-USMAN-TRANSIT
+        match_large_community: LCL-USMAN-EXPORT
       - seq: 500
         action: deny
