@@ -2,7 +2,7 @@
 
 [Interface]
 PrivateKey = {{ wg_privkey }}
-Address = {{ item.wg_address if item.wg_address is defined else "fe80::" + item.asn[6:] + "/64" }}
+Address = {{ item.wg_address if (item.wg_address is defined and item.wg_address != "auto") else "fe80::" + dn42_asn|string|regex_replace('^.*(.{4})$', '\\1') + ":" + item.asn|string|regex_replace('^.*(.{4})$', '\\1') + "/64" }}
 {% if item.wg_listenport is defined %}
 {% if item.wg_listenport == "auto" %}
 ListenPort = {{ "5" + item.asn[6:] }}

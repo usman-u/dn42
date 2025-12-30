@@ -84,10 +84,9 @@ peers:
     wg_listenport: 51820
     asn: "4242423914"
     peer_address: "fe80::ade0"
-    latency_us: "13700"
+    latency_us: "3600"
     dn42_region: Europe
     iso_3166_country_code: GB
-
   - name: LARE
     wg_pubkey: "RJaU1kRfiOREvKihiDMFpNrEGpN8td3z+UvHxabOlR0="
     wg_endpoint: "uk01.dn42.lare.cc:21869"
@@ -95,11 +94,19 @@ peers:
     wg_listenport: auto
     asn: "4242423035"
     peer_address: "fe80::3035:138"
-    latency_us: "50000"
+    latency_us: "4000"
     dn42_region: Europe
     iso_3166_country_code: GB
-  
-  
+  - name: ROUTEDBITS
+    wg_pubkey: "JjAHDWR1CgQd1HJNvURrqUECkN++0bzYxlm57VXjlyc="
+    wg_endpoint: "router.ams1.routedbits.com:51869"
+    wg_address: "fe80::1869:207/64"
+    wg_listenport: auto
+    asn: "4242420207"
+    peer_address: "fe80::207"
+    latency_us: "12500"
+    dn42_region: Europe
+    iso_3166_country_code: NL
   # - name: EXPLORO
   #   wg_pubkey: "lPjxQWE61Gvksk+KzecfZumr9SArDef3TGvAWXjCDD0="
   #   wg_endpoint: "frank1.exploro.one:32639"
@@ -110,13 +117,4 @@ peers:
   #   dn42_region: Europe
   #   iso_3166_country_code: DE
 
-  # - name: ROUTEDBITS
-  #   wg_pubkey: "vlqNoUSJ4T2sORBHusdwr9rCtQfdsIJvjV3Y/qBUcgY="
-  #   wg_endpoint: "router.lon1.routedbits.com:51869"
-  #   wg_address: "fe80::2070/64"
-  #   wg_listenport: auto
-  #   asn: "4242420207"
-  #   peer_address: "fe80::207"
-  #   latency_us: "16000"
-  #   dn42_region: Europe
-  #   iso_3166_country_code: GB
+
