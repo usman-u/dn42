@@ -4,19 +4,24 @@ Ansible-based Infrastructure as Code for DN42 BGP routers running FRR and WireGu
 
 ## Public Routing Policy
 
-This network performs cold potato routing with the following local preferences:
+This network implements a cold potato routing policy designed to prefer local egress points and minimise latency. Routes are selected based on BGP local-pref, followed by latency based MED.
 
-| LPREF | Criterion                                    | Notes                   |
-|-------|----------------------------------------------|-------------------------|
-| 500   | Anycast prefix originating from USMAN        | Reserved for future use |
-| 300   | Prefix originates from peer (AS_PATH len=1)  |                         |
-| 210   | Prefix matches neighbour's country           |                         |
-| 200   | Prefix matches neighbour's region            |                         |
-| 100   | Default                                      |                         |
+### Local Preference Hierarchy
 
-Latency of eBGP peerings is measured (in microseconds) and set as MED on ingress to inform path selection as a tie-breaker when LPREF and AS_PATH length are equal.
+| LPREF | Criterion 
+|-------|-----------
+| 500 | Anycast prefix originating from this AS | Reserved for future anycast services 
+| 300 | Prefix announced directly by peer (AS_PATH length = 1) | Prefer routes learned directly from origin AS 
+| 230 | Prefix's country  community matches this router's country 
+| 220 | Prefix's country  community matches peer's country
+| 210 | Prefix's region  community matches this router's region 
+| 200 | Prefix's region  community matches peer's region
+| 100 | Default (prefix matches DN42 ranges) 
+### Multi-Exit Discriminator (MED)
 
-Transit is not currently provided. MPLS Traffic Engineering work in progress.
+When multiple routes share the same LOCAL_PREF and AS_PATH length, the tie-breaker is the Multi-Exit Discriminator (MED), which is set to the measured tunnel latency in microseconds. Lower latency paths are preferred.
+
+Transit is not currently provided. MPLS Traffic Engineering is currently a work in progress.
 
 ## Network Topology
 

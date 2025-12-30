@@ -149,7 +149,14 @@ exit
 {% endif %}
 {% if peers is defined %}
 {% for peer in peers %}
+!
+! Route-map for {{ peer.name }} (AS{{ peer.asn }}) - {{ peer.iso_3166_country_code }}/{{ peer.dn42_region }}
+! Implements cold potato routing policy with geographic locality preferences
+!
+! IPv4 Ingress Policy
 route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 50
+ ! LPREF 300: Direct peer announcements (AS_PATH length = 1)
+ ! Prefer routes learned directly from the origin AS
  match as-path AS_PATH_LEN_1
  match ip address prefix-list DN42-ALL
  set large-community {{ ingress_bgp_large_community }}
@@ -157,32 +164,66 @@ route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_c
  set metric {{ peer.latency_us }}
 exit
 !
-route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 75
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 60
+ ! LPREF 230: Prefix has BGP community for THIS router's country ({{ iso_3166_country_code }})
+ ! Cold potato: prefer local country egress to minimize intra-AS transit
+ ! Matches when prefix is tagged with community CL-DN42-{{ iso_3166_country_code }}
+ match community CL-DN42-{{ iso_3166_country_code }}
+ match ip address prefix-list DN42-ALL
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 230
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 70
+ ! LPREF 220: Prefix has BGP community for PEER's country ({{ peer.iso_3166_country_code }})
+ ! Prefer international tunnel to prefix's destination country over other paths
+ ! Matches when prefix is tagged with community CL-DN42-{{ peer.iso_3166_country_code }}
  match community CL-DN42-{{ peer.iso_3166_country_code }}
  match ip address prefix-list DN42-ALL
  set large-community {{ ingress_bgp_large_community }}
+ set local-preference 220
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 80
+ ! LPREF 210: Prefix has BGP community for THIS router's region ({{ dn42_region }})
+ ! Prefer local region egress over remote regions
+ ! Matches when prefix is tagged with community CL-DN42-{{ dn42_region | upper }}
+ match community CL-DN42-{{ dn42_region | upper }}
+ match ip address prefix-list DN42-ALL
+ set large-community {{ ingress_bgp_large_community }}
  set local-preference 210
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 90
+ ! LPREF 200: Prefix has BGP community for PEER's region ({{ peer.dn42_region }})
+ ! Accept cross-region paths when no better option exists
+ ! Matches when prefix is tagged with community CL-DN42-{{ peer.dn42_region | upper }}
+ match community CL-DN42-{{ peer.dn42_region | upper }}
+ match ip address prefix-list DN42-ALL
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 200
  set metric {{ peer.latency_us }}
 exit
 !
 route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 100
- match community CL-DN42-{{ peer.dn42_region | upper }}
+ ! LPREF 100: Default for all other valid DN42 routes
+ ! MED ({{ peer.latency_us }}us) serves as tie-breaker for equal LPREFs
  match ip address prefix-list DN42-ALL
  set large-community {{ ingress_bgp_large_community }}
- set local-preference 200
- set metric {{ peer.latency_us }}
-exit
-!
-route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 150
- match ip address prefix-list DN42-ALL
- set large-community {{ ingress_bgp_large_community }}
+ set local-preference 100
  set metric {{ peer.latency_us }}
 exit
 !
 route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN deny 1000
+ ! Explicit deny for non-DN42 prefixes
 exit
 !
+! IPv6 Ingress Policy (mirrors IPv4 policy)
 route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 50
+ ! LPREF 300: Direct peer announcements (AS_PATH length = 1)
  match as-path AS_PATH_LEN_1
  match ipv6 address prefix-list DN42-ALL-V6
  set large-community {{ ingress_bgp_large_community }}
@@ -190,15 +231,39 @@ route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_c
  set metric {{ peer.latency_us }}
 exit
 !
-route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 75
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 60
+ ! LPREF 230: Prefix has BGP community for THIS router's country ({{ iso_3166_country_code }})
+ ! Matches when prefix is tagged with community CL-DN42-{{ iso_3166_country_code }}
+ match community CL-DN42-{{ iso_3166_country_code }}
+ match ipv6 address prefix-list DN42-ALL-V6
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 230
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 70
+ ! LPREF 220: Prefix has BGP community for PEER's country ({{ peer.iso_3166_country_code }})
+ ! Matches when prefix is tagged with community CL-DN42-{{ peer.iso_3166_country_code }}
  match community CL-DN42-{{ peer.iso_3166_country_code }}
+ match ipv6 address prefix-list DN42-ALL-V6
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 220
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 80
+ ! LPREF 210: Prefix has BGP community for THIS router's region ({{ dn42_region }})
+ ! Matches when prefix is tagged with community CL-DN42-{{ dn42_region | upper }}
+ match community CL-DN42-{{ dn42_region | upper }}
  match ipv6 address prefix-list DN42-ALL-V6
  set large-community {{ ingress_bgp_large_community }}
  set local-preference 210
  set metric {{ peer.latency_us }}
 exit
 !
-route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 100
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 90
+ ! LPREF 200: Prefix has BGP community for PEER's region ({{ peer.dn42_region }})
+ ! Matches when prefix is tagged with community CL-DN42-{{ peer.dn42_region | upper }}
  match community CL-DN42-{{ peer.dn42_region | upper }}
  match ipv6 address prefix-list DN42-ALL-V6
  set large-community {{ ingress_bgp_large_community }}
@@ -206,13 +271,16 @@ route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_c
  set metric {{ peer.latency_us }}
 exit
 !
-route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 150
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 100
+ ! LPREF 100: Default for all other valid DN42 routes
  match ipv6 address prefix-list DN42-ALL-V6
  set large-community {{ ingress_bgp_large_community }}
+ set local-preference 100
  set metric {{ peer.latency_us }}
 exit
 !
 route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 deny 1000
+ ! Explicit deny for non-DN42 prefixes
 exit
 !
 {% endfor %}
