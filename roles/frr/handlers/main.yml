@@ -7,6 +7,7 @@
     state: restarted
 
 - name: reload frr config
-  shell: |
-    vtysh -f /etc/frr/frr.conf
-  # Note: This applies the new configuration from frr.conf
+  systemd:
+    name: frr
+    state: restarted
+  # Note: FRR must be restarted to fully replace config (vtysh -f merges instead of replacing)
