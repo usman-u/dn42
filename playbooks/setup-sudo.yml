@@ -1,0 +1,68 @@
+---
+# One-time playbook to setup passwordless sudo on routers
+# Run this manually once per router as a user with sudo access
+
+- name: Setup passwordless sudo for automation user
+  hosts: routers
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Prompt for sudo password
+      pause:
+        prompt: "Enter your sudo password for {{ inventory_hostname }}"
+        echo: false
+      register: sudo_password
+      run_once: false
+
+    - name: Create sudoers file for {{ ansible_user }}
+      become: true
+      become_method: sudo
+      vars:
+        ansible_become_password: "{{ sudo_password.user_input }}"
+      copy:
+        content: |
+          {{ ansible_user }} ALL=(ALL) NOPASSWD: ALL
+        dest: "/etc/sudoers.d/{{ ansible_user }}"
+        mode: '0440'
+        owner: root
+        group: root
+        validate: 'visudo -cf %s'
+
+    - name: Add user to frr group
+      become: true
+      become_method: sudo
+      vars:
+        ansible_become_password: "{{ sudo_password.user_input }}"
+      user:
+        name: "{{ ansible_user }}"
+        groups: frr
+        append: true
+
+    - name: Allow user to run vtysh without password
+      become: true
+      become_method: sudo
+      vars:
+        ansible_become_password: "{{ sudo_password.user_input }}"
+      copy:
+        content: |
+          # Allow {{ ansible_user }} to run vtysh without password
+          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/vtysh
+        dest: /etc/sudoers.d/frr-vtysh
+        mode: '0440'
+        owner: root
+        group: root
+        validate: 'visudo -cf %s'
+
+    - name: Verify passwordless sudo works
+      become: true
+      become_method: sudo
+      vars:
+        ansible_become_password: "{{ sudo_password.user_input }}"
+      command: id -u
+      register: sudo_test
+      changed_when: false
+
+    - name: Display success message
+      debug:
+        msg: "✓ Passwordless sudo configured for {{ ansible_user }} on {{ inventory_hostname }}"

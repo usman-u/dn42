@@ -1,0 +1,71 @@
+---
+# WireGuard role: Manage WireGuard interfaces with wg-quick
+
+- name: Install WireGuard
+  apt:
+    name:
+      - wireguard
+      - wireguard-tools
+    state: present
+
+- name: Ensure /etc/wireguard directory exists
+  file:
+    path: /etc/wireguard
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+
+- name: Get list of current WireGuard interfaces
+  shell: wg show interfaces
+  register: wg_current_interfaces
+  changed_when: false
+  failed_when: false
+
+- name: Parse current WireGuard interfaces
+  set_fact:
+    current_wg_interfaces: "{{ wg_current_interfaces.stdout.split() | default([]) }}"
+
+- name: Generate desired WireGuard interface names
+  set_fact:
+    desired_wg_interfaces: "{{ peers | map(attribute='asn') | map('regex_replace', '^(.*)$', 'wg\\1') | list }}"
+
+- name: Generate WireGuard interface configurations
+  template:
+    src: wg-interface.conf.j2
+    dest: "/etc/wireguard/wg{{ item.asn }}.conf"
+    mode: '0600'
+    owner: root
+    group: root
+    backup: true
+  loop: "{{ peers }}"
+  when: item.asn is defined
+  register: wg_config_result
+  notify: restart wg-quick interfaces
+
+- name: Enable and start wg-quick services for peers
+  systemd:
+    name: "wg-quick@wg{{ item.asn }}"
+    enabled: true
+    state: started
+  loop: "{{ peers }}"
+  when: item.asn is defined
+
+- name: Find orphaned WireGuard interfaces
+  set_fact:
+    orphaned_wg_interfaces: "{{ current_wg_interfaces | difference(desired_wg_interfaces) }}"
+
+- name: Stop and disable orphaned WireGuard interfaces
+  systemd:
+    name: "wg-quick@{{ item }}"
+    enabled: false
+    state: stopped
+  loop: "{{ orphaned_wg_interfaces }}"
+  when: orphaned_wg_interfaces | length > 0
+
+- name: Remove orphaned WireGuard configuration files
+  file:
+    path: "/etc/wireguard/{{ item }}.conf"
+    state: absent
+  loop: "{{ orphaned_wg_interfaces }}"
+  when: orphaned_wg_interfaces | length > 0

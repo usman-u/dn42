@@ -1,0 +1,12 @@
+---
+# WireGuard handlers
+
+- name: restart wg-quick interfaces
+  systemd:
+    name: "wg-quick@wg{{ item.item.asn }}"
+    state: restarted
+  loop: "{{ wg_config_result.results }}"
+  when:
+    - wg_config_result is defined
+    - item.changed
+  listen: "restart wg-quick interfaces"

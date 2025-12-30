@@ -1,0 +1,16 @@
+---
+# Common role variables
+
+# Base packages for all routers
+base_packages:
+  - vim
+  - htop
+  - tcpdump
+  - traceroute
+  - mtr
+  - net-tools
+  - python3
+  - python3-pip
+
+# Optional: Create dn42 automation user
+create_dn42_user: false

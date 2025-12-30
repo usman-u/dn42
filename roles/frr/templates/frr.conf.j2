@@ -1,0 +1,219 @@
+frr version 8.4.4
+frr defaults traditional
+hostname {{ inventory_hostname }}
+log syslog informational
+service integrated-vtysh-config
+!
+{% if static_routes is defined %}
+{% for route in static_routes %}
+ip route {{ route.destination }} {{ route.nexthop }}
+{% endfor %}
+!
+{% endif %}
+interface lo
+ ip address {{ loopback }}/32
+exit
+!
+router bgp {{ dn42_asn }}
+ bgp router-id {{ bgp_router_id | default(loopback) }}
+{% if bgp_options is defined %}
+{% for option in bgp_options %}
+ {{ option }}
+{% endfor %}
+{% endif %}
+{% if bgp_peers is defined %}
+{% for peer in bgp_peers %}
+ neighbor {{ peer.neighbor }} remote-as {{ peer.remote_as }}
+{% if peer.description is defined %}
+ neighbor {{ peer.neighbor }} description {{ peer.description }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if peers is defined %}
+{% for peer in peers %}
+ neighbor {{ peer.peer_address }} remote-as {{ peer.asn }}
+ neighbor {{ peer.peer_address }} description {{ peer.name }}
+ neighbor {{ peer.peer_address }} interface wg{{ peer.asn }}
+ neighbor {{ peer.peer_address }} timers 1 5
+ neighbor {{ peer.peer_address }} capability extended-nexthop
+{% endfor %}
+{% endif %}
+ !
+ address-family ipv4 unicast
+{% if bgp_networks is defined and bgp_networks.ipv4 is defined %}
+{% for network in bgp_networks.ipv4 %}
+  network {{ network.prefix }}{% if network.route_map is defined %} route-map {{ network.route_map }}{% endif %}
+
+{% endfor %}
+{% endif %}
+{% if bgp_peers is defined %}
+{% for peer in bgp_peers %}
+{% if peer.ipv4 is defined and peer.ipv4.enabled is defined and peer.ipv4.enabled %}
+{% if peer.ipv4.route_map_in is defined %}
+  neighbor {{ peer.neighbor }} route-map {{ peer.ipv4.route_map_in }} in
+{% endif %}
+{% if peer.ipv4.route_map_out is defined %}
+  neighbor {{ peer.neighbor }} route-map {{ peer.ipv4.route_map_out }} out
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if peers is defined %}
+{% for peer in peers %}
+  neighbor {{ peer.peer_address }} soft-reconfiguration inbound
+  neighbor {{ peer.peer_address }} route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN in
+  neighbor {{ peer.peer_address }} route-map RM-DN42-PEER-OUT out
+{% endfor %}
+{% endif %}
+ exit-address-family
+ !
+ address-family ipv6 unicast
+{% if peers is defined %}
+{% for peer in peers %}
+  neighbor {{ peer.peer_address }} activate
+  neighbor {{ peer.peer_address }} soft-reconfiguration inbound
+  neighbor {{ peer.peer_address }} route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 in
+  neighbor {{ peer.peer_address }} route-map RM-DN42-PEER-OUT-V6 out
+{% endfor %}
+{% endif %}
+ exit-address-family
+exit
+!
+router isis DN42
+exit
+!
+{% if ip_prefix_lists is defined %}
+{% for prefix_list in ip_prefix_lists %}
+ip prefix-list {{ prefix_list.name }} seq {{ prefix_list.seq }} {{ prefix_list.action }} {{ prefix_list.prefix }}{% if prefix_list.ge is defined %} ge {{ prefix_list.ge }}{% endif %}{% if prefix_list.le is defined %} le {{ prefix_list.le }}{% endif %}
+
+{% endfor %}
+{% endif %}
+!
+{% if ipv6_prefix_lists is defined %}
+{% for prefix_list in ipv6_prefix_lists %}
+ipv6 prefix-list {{ prefix_list.name }} seq {{ prefix_list.seq }} {{ prefix_list.action }} {{ prefix_list.prefix }}{% if prefix_list.ge is defined %} ge {{ prefix_list.ge }}{% endif %}{% if prefix_list.le is defined %} le {{ prefix_list.le }}{% endif %}
+
+{% endfor %}
+{% endif %}
+!
+{% if bgp_as_path_acls is defined %}
+{% for as_path_acl in bgp_as_path_acls %}
+bgp as-path access-list {{ as_path_acl.name }} seq {{ as_path_acl.seq }} permit {{ as_path_acl.value }}
+{% endfor %}
+{% endif %}
+!
+{% if bgp_community_lists is defined %}
+{% for community_list in bgp_community_lists %}
+{% if community_list.seq is defined %}
+bgp community-list {% if community_list.type is defined %}{{ community_list.type }}{% else %}standard{% endif %} {{ community_list.name }} seq {{ community_list.seq }} permit {{ community_list.value }}
+{% else %}
+bgp community-list {% if community_list.type is defined %}{{ community_list.type }}{% else %}expanded{% endif %} {{ community_list.name }} seq 5 permit {{ community_list.value }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if bgp_large_community_lists is defined %}
+{% for large_community_list in bgp_large_community_lists %}
+bgp large-community-list expanded {{ large_community_list.name }} seq {{ large_community_list.seq }} permit {{ large_community_list.value }}
+{% endfor %}
+{% endif %}
+!
+{% if route_maps is defined %}
+{% for route_map in route_maps %}
+{% if route_map.entries is defined %}
+{% for entry in route_map.entries %}
+route-map {{ route_map.name }} {{ entry.action }} {{ entry.seq }}
+{% if entry.match_prefix_list is defined %}
+ match ip address prefix-list {{ entry.match_prefix_list }}
+{% endif %}
+{% if entry.match_ipv6_prefix_list is defined %}
+ match ipv6 address prefix-list {{ entry.match_ipv6_prefix_list }}
+{% endif %}
+{% if entry.match_large_community is defined %}
+ match large-community {{ entry.match_large_community }}
+{% endif %}
+exit
+!
+{% endfor %}
+{% else %}
+route-map {{ route_map.name }} {{ route_map.action }} {{ route_map.seq }}
+{% if route_map.set_community is defined %}
+ set community {{ route_map.set_community }}
+{% endif %}
+{% if route_map.set_large_community is defined %}
+ set large-community {{ route_map.set_large_community }}
+{% endif %}
+exit
+!
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if peers is defined %}
+{% for peer in peers %}
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 50
+ match as-path AS_PATH_LEN_1
+ match ip address prefix-list DN42-ALL
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 300
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 75
+ match community CL-DN42-{{ peer.iso_3166_country_code }}
+ match ip address prefix-list DN42-ALL
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 210
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 100
+ match community CL-DN42-{{ peer.dn42_region | upper }}
+ match ip address prefix-list DN42-ALL
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 200
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN permit 150
+ match ip address prefix-list DN42-ALL
+ set large-community {{ ingress_bgp_large_community }}
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN deny 1000
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 50
+ match as-path AS_PATH_LEN_1
+ match ipv6 address prefix-list DN42-ALL-V6
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 300
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 75
+ match community CL-DN42-{{ peer.iso_3166_country_code }}
+ match ipv6 address prefix-list DN42-ALL-V6
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 210
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 100
+ match community CL-DN42-{{ peer.dn42_region | upper }}
+ match ipv6 address prefix-list DN42-ALL-V6
+ set large-community {{ ingress_bgp_large_community }}
+ set local-preference 200
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 permit 150
+ match ipv6 address prefix-list DN42-ALL-V6
+ set large-community {{ ingress_bgp_large_community }}
+ set metric {{ peer.latency_us }}
+exit
+!
+route-map RM-DN42-PEER-{{ peer.dn42_region | upper }}-{{ peer.iso_3166_country_code }}-{{ peer.name }}-IN-V6 deny 1000
+exit
+!
+{% endfor %}
+{% endif %}

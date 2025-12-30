@@ -1,0 +1,40 @@
+---
+# Provision playbook for new DN42 routers (Day 0)
+- name: Provision new DN42 router
+  hosts: routers
+  gather_facts: true
+
+  pre_tasks:
+    - name: Check if this is a new router
+      stat:
+        path: /etc/frr/frr.conf
+      register: frr_installed
+
+    - name: Display provisioning notice
+      debug:
+        msg: |
+          Provisioning {{ inventory_hostname }}
+          This will install all required packages and perform initial configuration.
+
+  roles:
+    - role: common
+    - role: netplan
+      when: netplan_config is defined
+    - role: wireguard
+      when: peers is defined and peers | length > 0
+    - role: frr
+
+  post_tasks:
+    - name: Display next steps
+      debug:
+        msg: |
+          ✓ Provisioning complete for {{ inventory_hostname }}
+
+          Services installed:
+          - WireGuard
+          - FRRouting (BGP)
+
+          Verify:
+          - systemctl status frr
+          - wg show
+          - vtysh -c "show bgp summary"

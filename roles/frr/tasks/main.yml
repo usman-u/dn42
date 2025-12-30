@@ -1,0 +1,124 @@
+---
+# FRR role: Manage FRRouting BGP daemon
+
+- name: Install FRR
+  apt:
+    name:
+      - frr
+      - frr-pythontools
+    state: present
+    update_cache: true
+
+- name: Add user to frr group
+  user:
+    name: "{{ ansible_user }}"
+    groups: frr
+    append: true
+
+- name: Allow user to run vtysh without password
+  copy:
+    content: |
+      # Allow {{ ansible_user }} to run vtysh without password
+      {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/vtysh
+    dest: /etc/sudoers.d/frr-vtysh
+    mode: '0440'
+    owner: root
+    group: root
+    validate: 'visudo -cf %s'
+
+- name: Enable FRR daemons
+  template:
+    src: daemons.j2
+    dest: /etc/frr/daemons
+    mode: '0640'
+    owner: frr
+    group: frr
+    backup: true
+  notify: restart frr
+
+- name: Configure vtysh
+  template:
+    src: vtysh.conf.j2
+    dest: /etc/frr/vtysh.conf
+    mode: '0640'
+    owner: frr
+    group: frr
+  notify: restart frr
+
+- name: Get current FRR running configuration
+  shell: vtysh -c "show running-config"
+  register: frr_running_config
+  changed_when: false
+  failed_when: false
+
+- name: Get BGP summary before configuration change
+  shell: vtysh -c "show ip bgp summary"
+  register: bgp_summary_before
+  changed_when: false
+  failed_when: false
+
+- name: Generate FRR configuration
+  template:
+    src: frr.conf.j2
+    dest: /etc/frr/frr.conf
+    mode: '0640'
+    owner: frr
+    group: frr
+    backup: true
+    validate: 'vtysh --dryrun --inputfile %s'
+  notify: reload frr config
+  register: frr_config
+
+- name: Ensure FRR service is enabled and started
+  systemd:
+    name: frr
+    enabled: true
+    state: started
+
+- name: Wait for FRR to stabilize after config change
+  wait_for:
+    timeout: 5
+  when: frr_config is changed
+
+- name: Get BGP summary after configuration change
+  shell: vtysh -c "show ip bgp summary"
+  register: bgp_summary_after
+  changed_when: false
+  failed_when: false
+
+- name: Compare BGP peering states
+  set_fact:
+    bgp_changed: "{{ bgp_summary_before.stdout != bgp_summary_after.stdout }}"
+  when: bgp_summary_before.rc == 0 and bgp_summary_after.rc == 0
+
+- name: Display BGP peering changes header
+  debug:
+    msg: "⚠️  BGP PEERING CHANGES DETECTED"
+  when:
+    - bgp_summary_before.rc == 0
+    - bgp_summary_after.rc == 0
+    - bgp_summary_before.stdout != bgp_summary_after.stdout
+
+- name: Display BGP summary BEFORE
+  debug:
+    msg: "{{ bgp_summary_before.stdout_lines }}"
+  when:
+    - bgp_summary_before.rc == 0
+    - bgp_summary_after.rc == 0
+    - bgp_summary_before.stdout != bgp_summary_after.stdout
+
+- name: Display BGP summary AFTER
+  debug:
+    msg: "{{ bgp_summary_after.stdout_lines }}"
+  when:
+    - bgp_summary_before.rc == 0
+    - bgp_summary_after.rc == 0
+    - bgp_summary_before.stdout != bgp_summary_after.stdout
+
+- name: Display BGP status (no changes)
+  debug:
+    msg: "{{ ['✓ BGP Peerings Unchanged', ''] + bgp_summary_after.stdout_lines }}"
+  when:
+    - bgp_summary_before.rc == 0
+    - bgp_summary_after.rc == 0
+    - bgp_summary_before.stdout == bgp_summary_after.stdout

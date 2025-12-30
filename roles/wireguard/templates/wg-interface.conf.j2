@@ -1,0 +1,19 @@
+# {{ item.name }} on {{ inventory_hostname }}
+
+[Interface]
+PrivateKey = {{ wg_privkey }}
+Address = {{ item.wg_address if item.wg_address is defined else "fe80::" + item.asn[6:] + "/64" }}
+{% if item.wg_listenport is defined %}
+{% if item.wg_listenport == "auto" %}
+ListenPort = {{ "5" + item.asn[6:] }}
+{% elif item.wg_listenport %}
+ListenPort = {{ item.wg_listenport }}
+{% endif %}
+{% endif %}
+Table = {{ wg_defaults.table }}
+
+[Peer]
+PublicKey = {{ item.wg_pubkey }}
+Endpoint = {{ item.wg_endpoint }}
+AllowedIPs = {{ wg_defaults.allowed_ips }}
+PersistentKeepalive = {{ wg_defaults.persistent_keepalive }}

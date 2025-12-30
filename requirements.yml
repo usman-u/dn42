@@ -1,0 +1,5 @@
+---
+# Ansible Galaxy collections required for this project
+collections:
+  - name: ansible.posix
+    version: ">=2.1.0"

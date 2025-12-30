@@ -1,0 +1,12 @@
+---
+# FRR handlers
+
+- name: restart frr
+  systemd:
+    name: frr
+    state: restarted
+
+- name: reload frr config
+  shell: |
+    vtysh -c "configure terminal" -c "end" -c "write memory"
+  # Note: This gracefully reloads config without disrupting existing sessions

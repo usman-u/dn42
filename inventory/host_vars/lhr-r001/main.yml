@@ -1,0 +1,122 @@
+---
+# Node-specific configuration for lhr-r001
+fqdn: lhr-r001.usman.network
+loopback: 172.22.132.161
+dn42_region: Europe
+iso_3166_country_code: GB
+ingress_bgp_large_community: "4242421869:99:161"
+
+# WireGuard Keys
+wg_privkey: "{{ vault_wg_privkey }}"
+wg_pubkey: "+qJnOwEDYwCbI6k89dCf006IO8Ni+ktnov/il8j+BhM="
+
+# Netplan Configuration
+netplan_config:
+  network:
+    version: 2
+    ethernets:
+      ens18:
+        addresses:
+          - "10.0.10.251/24"
+        nameservers:
+          addresses:
+            - 10.0.10.1
+          search:
+            - usman.dn42
+            - usman.network
+        routes:
+          - to: "default"
+            via: "10.0.10.1"
+      ens19:
+        addresses:
+          - "169.254.0.2/30"
+
+# BGP Configuration
+bgp_router_id: 172.22.132.161
+bgp_options:
+  - "bgp always-compare-med"
+
+# BGP Network Statements
+bgp_networks:
+  ipv4:
+    - prefix: "172.22.132.160/27"
+      route_map: "RM-DN42-RANGE-ORIGIN"
+
+
+# BGP Peers
+bgp_peers:
+  # Non-DN42 peer (simple configuration)
+  - name: UPSTREAM
+    neighbor: "169.254.0.1"
+    remote_as: "65064"
+    type: simple  # Simple peer without DN42 route-maps
+    ipv4:
+      enabled: true
+      route_map_in: "RM-PERMIT-ALL"
+      route_map_out: "RM-PERMIT-ALL"
+
+  # # - name: KIOUBIT
+  #   neighbor: "fe80::ade0"
+  #   remote_as: "4242423914"
+  #   type: dn42
+  #   description: "KIOUBIT"
+  #   interface: "wg4242423914"
+  #   timers:
+  #     keepalive: 1
+  #     holdtime: 5
+  #   capability_extended_nexthop: true
+  #   dn42_region: Europe
+  #   iso_3166_country_code: GB
+  #   latency_us: "13700"
+  #   ipv4:
+  #     enabled: true
+  #     soft_reconfiguration: true
+  #   ipv6:
+  #     enabled: true
+  #     soft_reconfiguration: true
+
+# Automatic DN42 Peering
+peers:
+  - name: KIOUBIT
+    wg_pubkey: "sLbzTRr2gfLFb24NPzDOpy8j09Y6zI+a7NkeVMdVSR8="
+    wg_endpoint: "194.29.101.166:21869"
+    wg_address: "fe80::ade1/64"
+    wg_listenport: 51820
+    asn: "4242423914"
+    peer_address: "fe80::ade0"
+    latency_us: "13700"
+    dn42_region: Europe
+    iso_3166_country_code: GB
+
+  - name: LARE
+    wg_pubkey: "RJaU1kRfiOREvKihiDMFpNrEGpN8td3z+UvHxabOlR0="
+    wg_endpoint: "uk01.dn42.lare.cc:21869"
+    wg_address: "fe80::ade1/64"
+    wg_listenport: auto
+    asn: "4242423035"
+    peer_address: "fe80::3035:138"
+    latency_us: "50000"
+    dn42_region: Europe
+    iso_3166_country_code: GB
+  
+  
+  # - name: EXPLORO
+  #   wg_pubkey: "lPjxQWE61Gvksk+KzecfZumr9SArDef3TGvAWXjCDD0="
+  #   wg_endpoint: "frank1.exploro.one:32639"
+  #   wg_listenport: auto
+  #   asn: "4242421771"
+  #   peer_address: "fe80::da7a:a0ef:5a4b:89bc"
+  #   latency_us: "29000"
+  #   dn42_region: Europe
+  #   iso_3166_country_code: DE
+
+  # - name: ROUTEDBITS
+  #   wg_pubkey: "vlqNoUSJ4T2sORBHusdwr9rCtQfdsIJvjV3Y/qBUcgY="
+  #   wg_endpoint: "router.lon1.routedbits.com:51869"
+  #   wg_address: "fe80::2070/64"
+  #   wg_listenport: auto
+  #   asn: "4242420207"
+  #   peer_address: "fe80::207"
+  #   latency_us: "16000"
+  #   dn42_region: Europe
+  #   iso_3166_country_code: GB

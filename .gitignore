@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+
+# uv
+.uv/
+uv.lock
+
+# Ansible
+*.retry
+.ansible/
+/tmp/ansible_facts/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Generated configs (for comparison)
+/generated/
+
+# Secrets
+*.vault
+vault-password.txt
+.vault-password
+*.vault.yml.decrypted

@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DN42 Peer Configuration Schema",
+  "type": "object",
+  "required": ["name", "wg_pubkey", "wg_endpoint", "asn", "peer_address"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Peer name (usually network name)"
+    },
+    "wg_pubkey": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9+/]{43}=$",
+      "description": "WireGuard public key (base64)"
+    },
+    "wg_endpoint": {
+      "type": "string",
+      "pattern": "^.+:[0-9]+$",
+      "description": "WireGuard endpoint (host:port)"
+    },
+    "wg_address": {
+      "type": "string",
+      "description": "Link-local IPv6 address"
+    },
+    "wg_listenport": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["auto"]
+        },
+        {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535
+        }
+      ]
+    },
+    "asn": {
+      "type": "string",
+      "pattern": "^42424[0-9]{5}$",
+      "description": "Peer ASN (DN42 format)"
+    },
+    "peer_address": {
+      "type": "string",
+      "description": "BGP peer address (IPv6 link-local)"
+    },
+    "latency_us": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Expected latency in microseconds"
+    },
+    "dn42_region": {
+      "type": "string",
+      "description": "Geographic region"
+    },
+    "iso_3166_country_code": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "description": "ISO 3166-1 alpha-2 country code"
+    },
+    "timers_keepalive": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535,
+      "default": 1
+    },
+    "timers_holdtime": {
+      "type": "integer",
+      "minimum": 3,
+      "maximum": 65535,
+      "default": 5
+    }
+  }
+}

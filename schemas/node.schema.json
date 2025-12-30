@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DN42 Node Configuration Schema",
+  "type": "object",
+  "required": ["fqdn", "loopback", "dn42_region", "iso_3166_country_code", "ingress_bgp_large_community"],
+  "properties": {
+    "fqdn": {
+      "type": "string",
+      "format": "hostname",
+      "description": "Fully qualified domain name for this node"
+    },
+    "loopback": {
+      "type": "string",
+      "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}$",
+      "description": "Loopback IPv4 address for BGP router-id"
+    },
+    "dn42_region": {
+      "type": "string",
+      "description": "Geographic region for this node (e.g., Europe, Asia)"
+    },
+    "iso_3166_country_code": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "description": "ISO 3166-1 alpha-2 country code"
+    },
+    "ingress_bgp_large_community": {
+      "type": "string",
+      "pattern": "^[0-9]+:[0-9]+:[0-9]+$",
+      "description": "BGP large community value set on ingress routes (ASN:function:parameter)"
+    },
+    "wg_privkey": {
+      "type": "string",
+      "pattern": "^([A-Za-z0-9+/]{43}=|\\{\\{.*\\}\\})$",
+      "description": "WireGuard private key (base64) or Jinja2 variable reference"
+    },
+    "wg_pubkey": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9+/]{43}=$",
+      "description": "WireGuard public key (base64)"
+    },
+    "netplan_config": {
+      "type": "object",
+      "description": "Netplan network configuration (YAML structure)",
+      "properties": {
+        "network": {
+          "type": "object"
+        }
+      }
+    },
+    "bgp_router_id": {
+      "type": "string",
+      "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}$",
+      "description": "BGP router ID (typically same as loopback)"
+    },
+    "bgp_options": {
+      "type": "array",
+      "description": "BGP global options (e.g., 'bgp always-compare-med')",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bgp_networks": {
+      "type": "object",
+      "description": "Networks to advertise via BGP",
+      "properties": {
+        "ipv4": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["prefix"],
+            "properties": {
+              "prefix": {
+                "type": "string",
+                "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$",
+                "description": "IPv4 prefix to advertise"
+              },
+              "route_map": {
+                "type": "string",
+                "description": "Optional route-map to apply"
+              }
+            }
+          }
+        },
+        "ipv6": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["prefix"],
+            "properties": {
+              "prefix": {
+                "type": "string",
+                "description": "IPv6 prefix to advertise"
+              },
+              "route_map": {
+                "type": "string",
+                "description": "Optional route-map to apply"
+              }
+            }
+          }
+        }
+      }
+    },
+    "bgp_peers": {
+      "type": "array",
+      "description": "BGP peer configurations",
+      "items": {
+        "type": "object",
+        "required": ["name", "neighbor", "remote_as", "type"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Peer identifier (e.g., KIOUBIT, UPSTREAM)"
+          },
+          "neighbor": {
+            "type": "string",
+            "description": "Neighbor IP address (IPv4, IPv6, or link-local)"
+          },
+          "remote_as": {
+            "type": "string",
+            "description": "Remote AS number"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["simple", "dn42"],
+            "description": "Peer type: 'simple' for custom route-maps, 'dn42' for auto-generated DN42 route-maps"
+          },
+          "description": {
+            "type": "string",
+            "description": "Peer description"
+          },
+          "interface": {
+            "type": "string",
+            "description": "Interface name for link-local neighbors"
+          },
+          "timers": {
+            "type": "object",
+            "required": ["keepalive", "holdtime"],
+            "properties": {
+              "keepalive": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "holdtime": {
+                "type": "integer",
+                "minimum": 3,
+                "maximum": 65535
+              }
+            }
+          },
+          "capability_extended_nexthop": {
+            "type": "boolean",
+            "description": "Enable extended nexthop capability"
+          },
+          "dn42_region": {
+            "type": "string",
+            "description": "DN42 region (required for type: dn42)"
+          },
+          "iso_3166_country_code": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "description": "Country code (required for type: dn42)"
+          },
+          "latency_us": {
+            "type": "string",
+            "description": "Latency in microseconds (required for type: dn42)"
+          },
+          "ipv4": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "description": "Enable IPv4 address family for this peer"
+              },
+              "soft_reconfiguration": {
+                "type": "boolean",
+                "description": "Enable soft reconfiguration inbound"
+              },
+              "route_map_in": {
+                "type": "string",
+                "description": "Inbound route-map (for type: simple)"
+              },
+              "route_map_out": {
+                "type": "string",
+                "description": "Outbound route-map (for type: simple)"
+              }
+            }
+          },
+          "ipv6": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "description": "Enable IPv6 address family for this peer"
+              },
+              "soft_reconfiguration": {
+                "type": "boolean",
+                "description": "Enable soft reconfiguration inbound"
+              },
+              "route_map_in": {
+                "type": "string",
+                "description": "Inbound route-map (for type: simple)"
+              },
+              "route_map_out": {
+                "type": "string",
+                "description": "Outbound route-map (for type: simple)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "peers": {
+      "type": "array",
+      "description": "WireGuard tunnel peer configurations",
+      "items": {
+        "type": "object",
+        "required": ["name", "wg_pubkey", "wg_endpoint", "asn"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Peer identifier (should match bgp_peers name)"
+          },
+          "wg_pubkey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9+/]{43}=$",
+            "description": "WireGuard public key of peer"
+          },
+          "wg_endpoint": {
+            "type": "string",
+            "description": "Peer endpoint (IP:port or hostname:port)"
+          },
+          "wg_address": {
+            "type": "string",
+            "description": "Local WireGuard interface address (optional, auto-generated if not provided)"
+          },
+          "wg_listenport": {
+            "oneOf": [
+              {"type": "integer", "minimum": 1, "maximum": 65535},
+              {"type": "string", "enum": ["auto"]}
+            ],
+            "description": "Local listen port (integer or 'auto')"
+          },
+          "asn": {
+            "type": "string",
+            "description": "Peer ASN (used for auto-generation)"
+          },
+          "peer_address": {
+            "type": "string",
+            "description": "Peer's WireGuard address"
+          },
+          "latency_us": {
+            "type": "string",
+            "description": "Latency in microseconds"
+          },
+          "dn42_region": {
+            "type": "string",
+            "description": "DN42 region"
+          },
+          "iso_3166_country_code": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "description": "ISO 3166-1 alpha-2 country code"
+          }
+        }
+      }
+    }
+  }
+}

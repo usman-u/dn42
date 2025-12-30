@@ -1,0 +1,292 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DN42 Global Configuration Schema",
+  "type": "object",
+  "required": ["dn42_asn", "wg_defaults"],
+  "properties": {
+    "dn42_asn": {
+      "type": "integer",
+      "minimum": 4200000000,
+      "maximum": 4299999999,
+      "description": "DN42 ASN (must be in DN42 range)"
+    },
+    "wg_defaults": {
+      "type": "object",
+      "required": ["table", "persistent_keepalive", "allowed_ips"],
+      "properties": {
+        "table": {
+          "type": "string",
+          "enum": ["off", "auto"],
+          "description": "WireGuard routing table setting"
+        },
+        "persistent_keepalive": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535,
+          "description": "Keepalive interval in seconds"
+        },
+        "allowed_ips": {
+          "type": "string",
+          "description": "Allowed IPs for WireGuard peers"
+        }
+      }
+    },
+    "bgp_community_lists": {
+      "type": "array",
+      "description": "BGP community lists",
+      "items": {
+        "type": "object",
+        "required": ["name", "value"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Community list name"
+          },
+          "seq": {
+            "type": "integer",
+            "description": "Sequence number (optional)"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["standard", "expanded"],
+            "description": "Community list type (optional, defaults based on seq presence)"
+          },
+          "value": {
+            "type": "string",
+            "description": "Community value"
+          }
+        }
+      }
+    },
+    "bgp_large_community_lists": {
+      "type": "array",
+      "description": "BGP large community lists",
+      "items": {
+        "type": "object",
+        "required": ["name", "seq", "value"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Large community list name"
+          },
+          "seq": {
+            "type": "integer",
+            "description": "Sequence number"
+          },
+          "value": {
+            "type": "string",
+            "pattern": "^[0-9]+:[0-9]+:.*$",
+            "description": "Large community value (ASN:function:parameter)"
+          }
+        }
+      }
+    },
+    "bgp_as_path_acls": {
+      "type": "array",
+      "description": "BGP AS path access lists",
+      "items": {
+        "type": "object",
+        "required": ["name", "seq", "value"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "seq": {
+            "type": "integer"
+          },
+          "value": {
+            "type": "string",
+            "description": "Regex pattern for AS path"
+          }
+        }
+      }
+    },
+    "ip_prefix_lists": {
+      "type": "array",
+      "description": "IPv4 prefix lists",
+      "items": {
+        "type": "object",
+        "required": ["name", "seq", "action", "prefix"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Prefix list name"
+          },
+          "seq": {
+            "type": "integer",
+            "description": "Sequence number"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["permit", "deny"],
+            "description": "Action to take (permit or deny)"
+          },
+          "prefix": {
+            "type": "string",
+            "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$",
+            "description": "IPv4 prefix in CIDR notation"
+          },
+          "ge": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 32,
+            "description": "Minimum prefix length to match (greater than or equal)"
+          },
+          "le": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 32,
+            "description": "Maximum prefix length to match (less than or equal)"
+          }
+        }
+      }
+    },
+    "ipv6_prefix_lists": {
+      "type": "array",
+      "description": "IPv6 prefix lists",
+      "items": {
+        "type": "object",
+        "required": ["name", "seq", "action", "prefix"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Prefix list name"
+          },
+          "seq": {
+            "type": "integer",
+            "description": "Sequence number"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["permit", "deny"],
+            "description": "Action to take (permit or deny)"
+          },
+          "prefix": {
+            "type": "string",
+            "description": "IPv6 prefix in CIDR notation"
+          },
+          "ge": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 128,
+            "description": "Minimum prefix length to match (greater than or equal)"
+          },
+          "le": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 128,
+            "description": "Maximum prefix length to match (less than or equal)"
+          }
+        }
+      }
+    },
+    "ibgp_mesh_enabled": {
+      "type": "boolean",
+      "description": "Enable iBGP mesh between routers"
+    },
+    "mesh_routers": {
+      "type": "array",
+      "description": "List of routers in iBGP mesh",
+      "items": {
+        "type": "object",
+        "required": ["name", "loopback"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Router hostname"
+          },
+          "loopback": {
+            "type": "string",
+            "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}$",
+            "description": "Loopback IPv4 address"
+          }
+        }
+      }
+    },
+    "static_routes": {
+      "type": "array",
+      "description": "Static routes configuration",
+      "items": {
+        "type": "object",
+        "required": ["destination", "nexthop"],
+        "properties": {
+          "destination": {
+            "type": "string",
+            "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$",
+            "description": "Destination network in CIDR notation"
+          },
+          "nexthop": {
+            "type": "string",
+            "description": "Next-hop IP address, interface name (e.g., Null0), or gateway IP"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description for this static route"
+          }
+        }
+      }
+    },
+    "route_maps": {
+      "type": "array",
+      "description": "BGP route-map definitions (non-peer specific)",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Route-map name"
+          },
+          "seq": {
+            "type": "integer",
+            "description": "Sequence number (for simple route-maps)"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["permit", "deny"],
+            "description": "Action to take (for simple route-maps)"
+          },
+          "set_community": {
+            "type": "string",
+            "description": "BGP community values to set"
+          },
+          "set_large_community": {
+            "type": "string",
+            "description": "BGP large community value to set (supports Jinja2 variables)"
+          },
+          "entries": {
+            "type": "array",
+            "description": "Multiple route-map entries (for complex route-maps)",
+            "items": {
+              "type": "object",
+              "required": ["seq", "action"],
+              "properties": {
+                "seq": {
+                  "type": "integer",
+                  "description": "Sequence number"
+                },
+                "action": {
+                  "type": "string",
+                  "enum": ["permit", "deny"],
+                  "description": "Action to take"
+                },
+                "match_prefix_list": {
+                  "type": "string",
+                  "description": "IPv4 prefix-list to match"
+                },
+                "match_ipv6_prefix_list": {
+                  "type": "string",
+                  "description": "IPv6 prefix-list to match"
+                },
+                "match_large_community": {
+                  "type": "string",
+                  "description": "Large community list to match"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

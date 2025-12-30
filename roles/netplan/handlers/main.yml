@@ -1,0 +1,8 @@
+---
+# Netplan handlers
+
+- name: apply netplan
+  command: netplan apply
+  async: 45
+  poll: 0
+  # Note: We use async to avoid SSH disconnection during network changes

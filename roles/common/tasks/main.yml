@@ -1,0 +1,47 @@
+---
+# Common role: Base packages and system setup for DN42 routers
+
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_distribution | lower }}.yml"
+  when: ansible_distribution | lower in ['ubuntu', 'debian']
+
+- name: Update apt cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Install base system packages
+  apt:
+    name: "{{ base_packages }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Ensure IP forwarding is enabled
+  sysctl:
+    name: "{{ item }}"
+    value: "1"
+    state: present
+    reload: true
+  loop:
+    - net.ipv4.ip_forward
+    - net.ipv6.conf.all.forwarding
+
+- name: Disable reverse path filtering (required for DN42)
+  sysctl:
+    name: "{{ item }}"
+    value: "0"
+    state: present
+    reload: true
+  loop:
+    - net.ipv4.conf.all.rp_filter
+    - net.ipv4.conf.default.rp_filter
+
+- name: Create DN42 system user (if needed)
+  user:
+    name: dn42
+    comment: "DN42 Automation User"
+    shell: /bin/bash
+    create_home: true
+    state: present
+  when: create_dn42_user | default(false)

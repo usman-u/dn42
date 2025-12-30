@@ -1,0 +1,98 @@
+---
+# Global DN42 BGP Configuration
+dn42_asn: 4242421869
+
+# WireGuard Global Defaults
+wg_defaults:
+  table: "off"
+  persistent_keepalive: 25
+  allowed_ips: "0.0.0.0/0, ::/0"
+
+# BGP Community Lists
+bgp_community_lists:
+  - name: CL-DN42-DE
+    seq: 5
+    value: "64511:1276"
+  - name: CL-DN42-EUROPE
+    seq: 5
+    value: "64511:41"
+  - name: CL-DN42-GB
+    seq: 5
+    value: "64511:1826"
+
+# BGP AS Path ACLs
+bgp_as_path_acls:
+  - name: AS_PATH_LEN_1
+    seq: 5
+    value: "^[0-9]+$"
+
+# IP Prefix Lists
+ip_prefix_lists:
+  - name: DN42-ALL
+    seq: 5
+    action: permit
+    prefix: "172.20.0.0/14"
+    ge: 14
+    le: 32
+
+# IPv6 Prefix Lists
+ipv6_prefix_lists:
+  - name: DN42-ALL-V6
+    seq: 5
+    action: permit
+    prefix: "fd00::/8"
+    ge: 8
+    le: 128
+
+# BGP Large Community Lists
+bgp_large_community_lists:
+  - name: LCL-USMAN-NATIVE
+    seq: 10
+    value: "4242421869:100:1"
+  - name: LCL-USMAN-TRANSIT
+    seq: 10
+    value: "4242421869:100:2"
+
+# iBGP Mesh Configuration
+ibgp_mesh_enabled: true
+mesh_routers:
+  - name: lhr-r001
+    loopback: 172.22.132.161
+  - name: lhr-r002
+    loopback: 172.22.132.162
+
+# Static Routes
+static_routes:
+  - destination: "172.22.132.160/27"
+    nexthop: "Null0"
+    description: "DN42 network prefix null route"
+
+# Route Maps (non-peer specific)
+route_maps:
+  - name: RM-DN42-RANGE-ORIGIN
+    seq: 10
+    action: permit
+    set_community: "64511:41 64511:1826"
+    set_large_community: "4242421869:100:1"
+
+  - name: RM-PERMIT-ALL
+    seq: 10
+    action: permit
+
+  - name: RM-DN42-PEER-OUT
+    entries:
+      - seq: 10
+        action: permit
+        match_prefix_list: DN42-ALL
+        match_large_community: LCL-USMAN-NATIVE LCL-USMAN-TRANSIT
+      - seq: 500
+        action: deny
+
+  - name: RM-DN42-PEER-OUT-V6
+    entries:
+      - seq: 10
+        action: permit
+        match_ipv6_prefix_list: DN42-ALL-V6
+        match_large_community: LCL-USMAN-NATIVE LCL-USMAN-TRANSIT
+      - seq: 500
+        action: deny

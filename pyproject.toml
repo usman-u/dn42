@@ -1,0 +1,15 @@
+[project]
+name = "dn42-automation"
+version = "0.1.0"
+description = "Ansible-based IaC for DN42 BGP routers"
+requires-python = ">=3.11"
+dependencies = [
+    "ansible-core>=2.16,<3.0",
+    "ansible>=10.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4",
+    "ansible-lint>=6.22",
+]
