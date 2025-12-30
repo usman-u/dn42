@@ -16,7 +16,13 @@ This network performs cold potato routing with the following local preferences:
 
 Latency of eBGP peerings is measured (in microseconds) and set as MED on ingress to inform path selection as a tie-breaker when LPREF and AS_PATH length are equal.
 
-Transit is not currently provided.
+Transit is not currently provided. MPLS Traffic Engineering work in progress.
+
+## Network Topology
+
+![Network Topology](topology.png)
+
+*To regenerate this diagram: `uv run python scripts/generate_topology.py`*
 
 ## Ansible Quick Start
 
