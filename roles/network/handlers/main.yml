@@ -1,0 +1,12 @@
+---
+# Network role handlers
+
+- name: apply netplan
+  command: netplan apply
+  when: ansible_distribution == "Ubuntu"
+
+- name: restart networking
+  systemd:
+    name: networking
+    state: restarted
+  when: ansible_distribution == "Debian"

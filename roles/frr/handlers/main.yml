@@ -2,11 +2,13 @@
 # FRR handlers
 
 - name: restart frr
+  when: not ansible_check_mode
   systemd:
     name: frr
     state: restarted
 
 - name: reload frr config
+  when: not ansible_check_mode
   systemd:
     name: frr
     state: restarted

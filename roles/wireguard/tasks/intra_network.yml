@@ -1,0 +1,52 @@
+---
+# Build intra-network WireGuard configuration for this host
+
+- name: Initialize intra-network WireGuard configs
+  set_fact:
+    intra_network_wg_configs: []
+    intra_network_wg_interfaces: []
+
+- name: Build intra-network tunnel configs
+  set_fact:
+    intra_network_wg_configs: "{{ intra_network_wg_configs + [tunnel_config] }}"
+    intra_network_wg_interfaces: "{{ intra_network_wg_interfaces + [interface_name] }}"
+  vars:
+    router_a: "{{ item.routers[0] }}"
+    router_b: "{{ item.routers[1] }}"
+    # Determine if we're router_a or router_b
+    is_router_a: "{{ inventory_hostname == router_a }}"
+    peer_router: "{{ router_b if is_router_a else router_a }}"
+
+    # Extract location codes (e.g., lhr-r001 -> lhr, ewr-r001 -> ewr)
+    # WireGuard interface names can't have numbers after letters
+    location_a: "{{ router_a.split('-')[0] }}"
+    location_b: "{{ router_b.split('-')[0] }}"
+
+    # Generate interface name using just location codes
+    interface_name: "wg-{{ [location_a, location_b] | sort | join('-') }}"
+
+    # Generate addresses from loopbacks
+    my_loopback_last: "{{ loopback.split('.')[-1] }}"
+    peer_loopback_last: "{{ hostvars[peer_router].loopback.split('.')[-1] }}"
+    # IPv4 link-local for OSPF + IPv6 link-local for iBGP
+    my_wg_address: "169.254.255.{{ my_loopback_last }}/30, fe80::1869:{{ my_loopback_last }}/64"
+
+    # Generate port if "auto"
+    calculated_port: "{{ (5000 + (my_loopback_last | int) + (peer_loopback_last | int)) if item.port == 'auto' else item.port }}"
+
+    tunnel_config:
+      interface_name: "{{ interface_name }}"
+      privkey: "{{ wg_privkey }}"
+      address: "{{ my_wg_address }}"
+      listenport: "{{ calculated_port }}"
+      peer_pubkey: "{{ hostvars[peer_router].wg_pubkey }}"
+      peer_endpoint: "{{ hostvars[peer_router].wan_ip + ':' + (calculated_port | string) }}"
+  loop: "{{ intra_network_tunnels | default([]) }}"
+  when:
+    - intra_network_tunnels is defined
+    - inventory_hostname in item.routers
+
+- name: Debug intra-network WireGuard configs
+  debug:
+    var: intra_network_wg_configs
+  when: intra_network_wg_configs is defined and (intra_network_wg_configs | length > 0)

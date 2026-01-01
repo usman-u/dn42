@@ -1,6 +1,14 @@
 ---
 # FRR role: Manage FRRouting BGP daemon
 
+- name: Build iBGP peer list
+  include_tasks: build_ibgp_peers.yml
+  when: ibgp_enabled | default(false)
+
+- name: Build intra-network WireGuard configs for FRR
+  include_tasks: ../wireguard/tasks/intra_network.yml
+  when: intra_network_tunnels is defined
+
 - name: Install FRR
   apt:
     name:
@@ -8,23 +16,6 @@
       - frr-pythontools
     state: present
     update_cache: true
-
-- name: Add user to frr group
-  user:
-    name: "{{ ansible_user }}"
-    groups: frr
-    append: true
-
-- name: Allow user to run vtysh without password
-  copy:
-    content: |
-      # Allow {{ ansible_user }} to run vtysh without password
-      {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/vtysh
-    dest: /etc/sudoers.d/frr-vtysh
-    mode: '0440'
-    owner: root
-    group: root
-    validate: 'visudo -cf %s'
 
 - name: Enable FRR daemons
   template:
@@ -45,9 +36,9 @@
     group: frr
   notify: restart frr
 
-- name: Get current FRR running configuration
+- name: Get current FRR running configuration (before)
   shell: vtysh -c "show running-config"
-  register: frr_running_config
+  register: frr_running_config_before
   changed_when: false
   failed_when: false
 
@@ -70,6 +61,7 @@
   register: frr_config
 
 - name: Ensure FRR service is enabled and started
+  when: not ansible_check_mode
   systemd:
     name: frr
     enabled: true
@@ -80,11 +72,54 @@
     timeout: 5
   when: frr_config is changed
 
+- name: Get current FRR running configuration (after)
+  shell: vtysh -c "show running-config"
+  register: frr_running_config_after
+  changed_when: false
+  failed_when: false
+
 - name: Get BGP summary after configuration change
   shell: vtysh -c "show ip bgp summary"
   register: bgp_summary_after
   changed_when: false
   failed_when: false
+
+- name: Compare FRR running configurations
+  set_fact:
+    frr_config_changed: "{{ frr_running_config_before.stdout != frr_running_config_after.stdout }}"
+  when:
+    - frr_running_config_before.rc == 0
+    - frr_running_config_after.rc == 0
+
+- name: Write running configs to temp files for diff
+  copy:
+    content: "{{ item.content }}"
+    dest: "/tmp/frr_{{ item.name }}_{{ inventory_hostname }}.conf"
+  loop:
+    - { name: 'before', content: "{{ frr_running_config_before.stdout }}" }
+    - { name: 'after', content: "{{ frr_running_config_after.stdout }}" }
+  when:
+    - frr_running_config_before.rc == 0
+    - frr_running_config_after.rc == 0
+    - frr_running_config_before.stdout != frr_running_config_after.stdout
+  changed_when: false
+
+- name: Generate diff of FRR running config changes
+  shell: diff -u /tmp/frr_before_{{ inventory_hostname }}.conf /tmp/frr_after_{{ inventory_hostname }}.conf || true
+  register: frr_config_diff
+  when:
+    - frr_running_config_before.rc == 0
+    - frr_running_config_after.rc == 0
+    - frr_running_config_before.stdout != frr_running_config_after.stdout
+  changed_when: false
+
+- name: Display FRR configuration changes
+  debug:
+    msg: "{{ ['⚠️  FRR CONFIGURATION CHANGES DETECTED', ''] + frr_config_diff.stdout_lines }}"
+  when:
+    - frr_running_config_before.rc == 0
+    - frr_running_config_after.rc == 0
+    - frr_running_config_before.stdout != frr_running_config_after.stdout
 
 - name: Compare BGP peering states
   set_fact:
@@ -114,6 +149,14 @@
     - bgp_summary_before.rc == 0
     - bgp_summary_after.rc == 0
     - bgp_summary_before.stdout != bgp_summary_after.stdout
+
+- name: Display FRR status (no config changes)
+  debug:
+    msg: "✓ FRR Running Configuration Unchanged"
+  when:
+    - frr_running_config_before.rc == 0
+    - frr_running_config_after.rc == 0
+    - frr_running_config_before.stdout == frr_running_config_after.stdout
 
 - name: Display BGP status (no changes)
   debug:

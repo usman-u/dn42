@@ -1,7 +1,8 @@
 ---
 # Node-specific configuration for lhr-r001
-fqdn: lhr-r001.usman.network
+fqdn: uk-lon3.usman.network
 loopback: 172.22.132.161
+wan_ip: uk-lon3.usman.network
 dn42_region: Europe
 iso_3166_country_code: GB
 ingress_bgp_large_community: "4242421869:99:161"
@@ -10,26 +11,21 @@ ingress_bgp_large_community: "4242421869:99:161"
 wg_privkey: "{{ vault_wg_privkey }}"
 wg_pubkey: "+qJnOwEDYwCbI6k89dCf006IO8Ni+ktnov/il8j+BhM="
 
-# Netplan Configuration
-netplan_config:
-  network:
-    version: 2
-    ethernets:
-      ens18:
-        addresses:
-          - "10.0.10.251/24"
-        nameservers:
-          addresses:
-            - 10.0.10.1
-          search:
-            - usman.dn42
-            - usman.network
-        routes:
-          - to: "default"
-            via: "10.0.10.1"
-      ens19:
-        addresses:
-          - "169.254.0.2/30"
+# Network Configuration (OS-agnostic)
+network_config:
+  interfaces:
+    - name: ens18
+      addresses:
+        - 10.0.10.251/24
+      gateway: 10.0.10.1
+      nameservers:
+        - 10.0.10.1
+      search_domains:
+        - usman.dn42
+        - usman.network
+    - name: ens19
+      addresses:
+        - 169.254.0.2/30
 
 # BGP Configuration
 bgp_router_id: 172.22.132.161

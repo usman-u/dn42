@@ -31,15 +31,18 @@ def load_inventory():
 
 def generate_graph(routers, output_file="topology.png"):
     """Generate network topology graph as PNG."""
+    base_path = Path(__file__).parent.parent
     G = nx.Graph()
 
     # Track node types for coloring and positioning
     node_colors = {}
     node_labels = {}
     edge_labels = {}
+    edge_styles = {}  # Track edge styles
     router_nodes = []
     dn42_peers = []
     other_peers = []
+    ibgp_edges = []
 
     USMAN_ASN = "4242421869"
 
@@ -53,6 +56,32 @@ def generate_graph(routers, output_file="topology.png"):
         node_colors[node_id] = "#4a90e2"  # Blue for routers
         node_labels[node_id] = f"{hostname}\n{loopback}\nAS{USMAN_ASN}"
         router_nodes.append(node_id)
+
+    # Add intra-network connections (iBGP + IS-IS)
+    global_vars_path = base_path / "inventory" / "group_vars" / "all" / "global.yml"
+    if global_vars_path.exists():
+        with open(global_vars_path) as f:
+            global_config = yaml.safe_load(f)
+            intra_network_tunnels = global_config.get("intra_network_tunnels", [])
+
+            intra_network_tunnels = global_config.get("intra_network_tunnels", [])
+            segment_routing_enabled = global_config.get("segment_routing_enabled", False)
+
+            # Determine label based on SR status
+            sr_label = "+SR" if segment_routing_enabled else ""
+
+            for tunnel in intra_network_tunnels:
+                # New simplified format: routers: [router_a, router_b]
+                router_pair = tunnel.get("routers", [])
+
+                if len(router_pair) == 2:
+                    router_a, router_b = router_pair
+
+                    if router_a in router_nodes and router_b in router_nodes:
+                        G.add_edge(router_a, router_b)
+                        edge_labels[(router_a, router_b)] = f"iBGP+OSPF{sr_label}\nWireGuard"
+                        edge_styles[(router_a, router_b)] = "solid"
+                        ibgp_edges.append((router_a, router_b))
 
     # Add peer connections
     for router in routers:
@@ -130,12 +159,26 @@ def generate_graph(routers, output_file="topology.png"):
             linewidths=2
         )
 
-    # Draw edges
+    # Draw edges - iBGP edges first (solid, thicker, darker)
+    if ibgp_edges:
+        nx.draw_networkx_edges(
+            G, pos,
+            edgelist=ibgp_edges,
+            width=3,
+            alpha=0.8,
+            edge_color='#2c5aa0',  # Darker blue
+            style='solid'
+        )
+
+    # Draw external edges (dashed, thinner)
+    external_edges = [edge for edge in G.edges() if edge not in ibgp_edges and (edge[1], edge[0]) not in ibgp_edges]
     nx.draw_networkx_edges(
         G, pos,
+        edgelist=external_edges,
         width=2,
-        alpha=0.6,
-        edge_color='#666666'
+        alpha=0.5,
+        edge_color='#666666',
+        style='dashed'
     )
 
     # Draw labels
@@ -156,10 +199,13 @@ def generate_graph(routers, output_file="topology.png"):
     )
 
     # Add legend
+    from matplotlib.lines import Line2D
     legend_elements = [
         mpatches.Patch(facecolor='#4a90e2', edgecolor='black', label='USMAN Routers (AS4242421869)'),
         mpatches.Patch(facecolor='#66bb6a', edgecolor='black', label='DN42 Peers'),
-        mpatches.Patch(facecolor='#ffa726', edgecolor='black', label='Non-DN42 Peers')
+        mpatches.Patch(facecolor='#ffa726', edgecolor='black', label='Non-DN42 Peers'),
+        Line2D([0], [0], color='#2c5aa0', linewidth=3, linestyle='-', label='iBGP + IS-IS (Intra-network)'),
+        Line2D([0], [0], color='#666666', linewidth=2, linestyle='--', label='eBGP Peering')
     ]
     plt.legend(handles=legend_elements, loc='upper left', fontsize=10)
 

@@ -1,0 +1,16 @@
+# {{ item.interface_name }} on {{ inventory_hostname }}
+# Intra-network tunnel for iBGP and IS-IS
+
+[Interface]
+PrivateKey = {{ item.privkey }}
+Address = {{ item.address }}
+ListenPort = {{ item.listenport }}
+Table = off
+
+[Peer]
+PublicKey = {{ item.peer_pubkey }}
+{% if item.peer_endpoint is defined %}
+Endpoint = {{ item.peer_endpoint }}
+{% endif %}
+AllowedIPs = 0.0.0.0/0, ::/0
+PersistentKeepalive = 25

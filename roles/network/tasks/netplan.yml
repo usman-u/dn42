@@ -1,0 +1,32 @@
+---
+# Ubuntu netplan configuration
+
+- name: Check if netplan is installed
+  command: which netplan
+  register: netplan_check
+  failed_when: false
+  changed_when: false
+
+- name: Install netplan.io
+  apt:
+    name: netplan.io
+    state: present
+  when: netplan_check.rc != 0
+
+- name: Generate netplan configuration from network_config
+  template:
+    src: netplan.yaml.j2
+    dest: /etc/netplan/50-cloud-init.yaml
+    mode: '0600'
+    owner: root
+    group: root
+    backup: true
+    validate: 'netplan --dry-run generate --root-dir / --config-file %s'
+  notify: apply netplan
+  register: netplan_config_result
+
+- name: Validate netplan configuration (dry-run)
+  command: netplan --dry-run generate
+  register: netplan_validate
+  changed_when: false
+  failed_when: netplan_validate.rc != 0

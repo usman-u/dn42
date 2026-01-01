@@ -56,13 +56,72 @@ bgp_large_community_lists:
     seq: 10
     value: "4242421869:100:[1-2]"
 
-# iBGP Mesh Configuration
-ibgp_mesh_enabled: true
-mesh_routers:
-  - name: lhr-r001
-    loopback: 172.22.132.161
-  - name: lhr-r002
-    loopback: 172.22.132.162
+
+
+# Intra-network WireGuard tunnels (for iBGP + OSPF)
+# Port can be "auto" (generates from loopback octets) or explicit number
+intra_network_tunnels:
+  - routers: [lhr-r001, ewr-r001]
+    port: auto
+
+# iBGP Configuration - Full Mesh
+ibgp_enabled: true
+ibgp_config:
+  timers:
+    keepalive: 60
+    holdtime: 180
+  route_reflector_enabled: false
+  bfd_enabled: false
+
+  # iBGP Peer Group Configuration
+  peer_group:
+    name: "IBGP-MESH"
+    remote_as: "{{ dn42_asn }}"
+    next_hop_self: true
+    address_families:
+      ipv4_unicast: true
+      ipv6_unicast: false  # Disabled: loopbacks are IPv4-only
+    soft_reconfiguration_inbound: true
+
+# iBGP full mesh
+ibgp_mesh:
+  - lhr-r001
+  - ewr-r001
+
+# IS-IS Configuration
+# NOTE: IS-IS cannot work over WireGuard (Layer 2 vs Layer 3 incompatibility)
+# WireGuard uses TUN devices (L3 only), IS-IS requires pfpacket (L2 frames)
+isis_enabled: false
+isis_config:
+  area_id: "49"
+  is_type: "level-2-only"
+  metric_style: "wide"
+  circuit_type: "level-2-only"
+
+# OSPF Configuration (working - IS-IS incompatible with WireGuard)
+ospf_enabled: true
+ospf_config:
+  area_id: "0.0.0.0"  # Backbone area
+  reference_bandwidth: 100000  # 100 Gbps for proper cost calculation
+  log_adjacency_changes: true
+  hello_interval: 3
+  dead_interval: 10
+
+# # Segment Routing Configuration
+# segment_routing_enabled: true
+# segment_routing_config:
+#   # Segment Routing Global Block (MUST be identical on all routers)
+#   # Defines the MPLS label range: actual_label = srgb_start + prefix_sid_index
+#   srgb_start: 16000
+#   srgb_end: 23999
+#   # Maximum SID Depth (max labels in stack)
+#   node_msd: 16
+#   # Use explicit-null labels (better for traceroute)
+#   explicit_null: true
+#   # Prefix SID index calculation method:
+#   #   "last_octet": Use last octet of loopback (e.g., 172.22.132.161 → index 161 → label 16161)
+#   #   "manual": Specify index manually in host_vars (segment_routing_index)
+#   index_method: "last_octet"
 
 # Static Routes
 static_routes:

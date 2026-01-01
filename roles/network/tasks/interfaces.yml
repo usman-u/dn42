@@ -1,0 +1,51 @@
+---
+# Debian /etc/network/interfaces configuration
+
+- name: Check if interface uses DHCP
+  set_fact:
+    has_static_config: "{{ network_config.interfaces | selectattr('dhcp', 'undefined') | list | length > 0 or network_config.interfaces | rejectattr('dhcp', 'equalto', true) | list | length > 0 }}"
+  when: network_config.interfaces is defined
+
+- name: Disable cloud-init network configuration (only for static configs)
+  copy:
+    content: "network: {config: disabled}\n"
+    dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+    mode: '0644'
+  when:
+    - ansible_facts.service_mgr == "systemd"
+    - has_static_config | default(false)
+  failed_when: false
+
+- name: Generate /etc/network/interfaces configuration (only for static configs)
+  template:
+    src: interfaces.j2
+    dest: /etc/network/interfaces
+    mode: '0644'
+    owner: root
+    group: root
+    backup: true
+  notify: restart networking
+  when: has_static_config | default(false)
+
+- name: Generate interface-specific configs
+  template:
+    src: interface.j2
+    dest: "/etc/network/interfaces.d/{{ item.name }}"
+    mode: '0644'
+    owner: root
+    group: root
+    backup: true
+    validate: 'sh -c "grep -q \"iface {{ item.name }}\" %s"'
+  loop: "{{ network_config.interfaces }}"
+  notify: restart networking
+  when:
+    - network_config.interfaces is defined
+    - not (item.dhcp | default(false))
+
+- name: Validate Debian network configuration (dry-run)
+  command: "ifup --no-act {{ item.name }}"
+  loop: "{{ network_config.interfaces }}"
+  register: interfaces_validate
+  changed_when: false
+  failed_when: false
+  when: network_config.interfaces is defined

@@ -1,5 +1,6 @@
 ---
 # Main playbook for DN42 router configuration
+# This playbook is idempotent and handles both initial setup and ongoing configuration
 - name: Configure DN42 routers
   hosts: routers
   gather_facts: true
@@ -10,28 +11,27 @@
       debug:
         msg: "{{ 'DRY-RUN MODE - No changes will be applied' if ansible_check_mode else 'APPLY MODE - Changes will be applied' }}"
 
-    - name: Ensure we're running on Ubuntu
+    - name: Ensure we're running on a supported OS
       assert:
         that:
-          - ansible_distribution == "Ubuntu"
-        fail_msg: "This playbook only supports Ubuntu. Found: {{ ansible_distribution }}"
+          - ansible_distribution in ["Ubuntu", "Debian"]
+        fail_msg: "This playbook only supports Ubuntu and Debian. Found: {{ ansible_distribution }}"
 
     - name: Display router information
       debug:
         msg: |
-          Router: {{ inventory_hostname }} | {{ loopback }} ASN: {{ dn42_asn }} | Peers: {{ peers | length }}
+          Router: {{ inventory_hostname }} | {{ loopback }} | ASN: {{ dn42_asn }} | Peers: {{ peers | default([]) | length }}
 
   roles:
     - role: common
       tags: ['common', 'base']
 
-    - role: netplan
-      tags: ['netplan', 'network']
-      when: netplan_config is defined
+    - role: network
+      tags: ['network']
+      when: network_config is defined
 
     - role: wireguard
       tags: ['wireguard', 'wg']
-      when: peers is defined and peers | length > 0
 
     - role: frr
       tags: ['frr', 'bgp', 'routing']

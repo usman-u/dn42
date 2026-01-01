@@ -16,6 +16,10 @@
     owner: root
     group: root
 
+- name: Build intra-network WireGuard configurations
+  include_tasks: intra_network.yml
+  when: intra_network_tunnels is defined
+
 - name: Get list of current WireGuard interfaces
   shell: wg show interfaces
   register: wg_current_interfaces
@@ -26,11 +30,11 @@
   set_fact:
     current_wg_interfaces: "{{ wg_current_interfaces.stdout.split() | default([]) }}"
 
-- name: Generate desired WireGuard interface names
+- name: Generate desired WireGuard interface names (DN42 peers)
   set_fact:
-    desired_wg_interfaces: "{{ peers | map(attribute='asn') | map('regex_replace', '^(.*)$', 'wg\\1') | list }}"
+    desired_wg_interfaces: "{{ (peers | default([]) | map(attribute='asn') | map('regex_replace', '^(.*)$', 'wg\\1') | list) + (intra_network_wg_interfaces | default([])) }}"
 
-- name: Generate WireGuard interface configurations
+- name: Generate WireGuard interface configurations (DN42 peers)
   template:
     src: wg-interface.conf.j2
     dest: "/etc/wireguard/wg{{ item.asn }}.conf"
@@ -38,30 +42,56 @@
     owner: root
     group: root
     backup: true
-  loop: "{{ peers }}"
+  loop: "{{ peers | default([]) }}"
   when: item.asn is defined
   register: wg_config_result
   notify: restart wg-quick interfaces
 
-- name: Enable and start wg-quick services for peers
+- name: Generate WireGuard interface configurations (intra-network)
+  template:
+    src: wg-intra.conf.j2
+    dest: "/etc/wireguard/{{ item.interface_name }}.conf"
+    mode: '0600'
+    owner: root
+    group: root
+    backup: true
+  loop: "{{ intra_network_wg_configs | default([]) }}"
+  when: intra_network_wg_configs is defined
+  notify: restart wg-quick interfaces
+
+- name: Enable and start wg-quick services (DN42 peers)
+  when:
+    - not ansible_check_mode
+    - item.asn is defined
   systemd:
     name: "wg-quick@wg{{ item.asn }}"
     enabled: true
     state: started
-  loop: "{{ peers }}"
-  when: item.asn is defined
+  loop: "{{ peers | default([]) }}"
+
+- name: Enable and start wg-quick services (intra-network)
+  when:
+    - not ansible_check_mode
+    - intra_network_wg_configs is defined
+  systemd:
+    name: "wg-quick@{{ item.interface_name }}"
+    enabled: true
+    state: started
+  loop: "{{ intra_network_wg_configs | default([]) }}"
 
 - name: Find orphaned WireGuard interfaces
   set_fact:
     orphaned_wg_interfaces: "{{ current_wg_interfaces | difference(desired_wg_interfaces) }}"
 
 - name: Stop and disable orphaned WireGuard interfaces
+  when:
+    - not ansible_check_mode
+    - orphaned_wg_interfaces | length > 0
   systemd:
     name: "wg-quick@{{ item }}"
     enabled: false
     state: stopped
   loop: "{{ orphaned_wg_interfaces }}"
-  when: orphaned_wg_interfaces | length > 0
 
 - name: Remove orphaned WireGuard configuration files
   file:

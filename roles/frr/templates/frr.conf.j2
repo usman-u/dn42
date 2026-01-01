@@ -12,8 +12,45 @@ ip route {{ route.destination }} {{ route.nexthop }}
 {% endif %}
 interface lo
  ip address {{ loopback }}/32
+{% if isis_enabled | default(false) %}
+ ip router isis DN42
+ ipv6 router isis DN42
+{% endif %}
+{% if ospf_enabled | default(false) %}
+ ip ospf area {{ ospf_config.area_id | default('0.0.0.0') }}
+{% endif %}
 exit
 !
+{% if isis_enabled | default(false) and intra_network_wg_configs is defined %}
+{% for wg in intra_network_wg_configs %}
+interface {{ wg.interface_name }}
+ ip address {{ wg.address.split(',')[0].strip() }}
+ ipv6 address {{ wg.address.split(',')[1].strip() }}
+ ip router isis DN42
+ ipv6 router isis DN42
+ isis network point-to-point
+ isis circuit-type {{ isis_config.circuit_type | default('level-2-only') }}
+exit
+!
+{% endfor %}
+{% endif %}
+{% if ospf_enabled | default(false) and intra_network_wg_configs is defined %}
+{% for wg in intra_network_wg_configs %}
+interface {{ wg.interface_name }}
+ ip address {{ wg.address.split(',')[0].strip() }}
+ ipv6 address {{ wg.address.split(',')[1].strip() }}
+ ip ospf area {{ ospf_config.area_id | default('0.0.0.0') }}
+ ip ospf network point-to-point
+{% if ospf_config.hello_interval is defined %}
+ ip ospf hello-interval {{ ospf_config.hello_interval }}
+{% endif %}
+{% if ospf_config.dead_interval is defined %}
+ ip ospf dead-interval {{ ospf_config.dead_interval }}
+{% endif %}
+exit
+!
+{% endfor %}
+{% endif %}
 router bgp {{ dn42_asn }}
  bgp router-id {{ bgp_router_id | default(loopback) }}
 {% if bgp_options is defined %}
@@ -21,12 +58,39 @@ router bgp {{ dn42_asn }}
  {{ option }}
 {% endfor %}
 {% endif %}
+{% if ibgp_enabled | default(false) and ibgp_config.peer_group is defined %}
+ !
+ ! iBGP Peer Group Configuration
+ neighbor {{ ibgp_config.peer_group.name }} peer-group
+ neighbor {{ ibgp_config.peer_group.name }} remote-as {{ dn42_asn }}
+{% if ibgp_config.peer_group.next_hop_self | default(false) %}
+ neighbor {{ ibgp_config.peer_group.name }} next-hop-self
+{% endif %}
+{% if ibgp_config.timers is defined %}
+ neighbor {{ ibgp_config.peer_group.name }} timers {{ ibgp_config.timers.keepalive }} {{ ibgp_config.timers.holdtime }}
+{% endif %}
+{% if ibgp_config.bfd_enabled | default(false) %}
+ neighbor {{ ibgp_config.peer_group.name }} bfd
+{% endif %}
+{% if ibgp_config.peer_group.soft_reconfiguration_inbound | default(false) %}
+ neighbor {{ ibgp_config.peer_group.name }} soft-reconfiguration inbound
+{% endif %}
+ !
+{% endif %}
 {% if bgp_peers is defined %}
 {% for peer in bgp_peers %}
  neighbor {{ peer.neighbor }} remote-as {{ peer.remote_as }}
 {% if peer.description is defined %}
  neighbor {{ peer.neighbor }} description {{ peer.description }}
 {% endif %}
+{% endfor %}
+{% endif %}
+{% if ibgp_enabled | default(false) and intra_network_ibgp_peers is defined %}
+{% for ibgp_peer in intra_network_ibgp_peers %}
+ ! iBGP peer: {{ ibgp_peer.name }}
+ neighbor {{ ibgp_peer.loopback }} peer-group {{ ibgp_config.peer_group.name }}
+ neighbor {{ ibgp_peer.loopback }} description iBGP-{{ ibgp_peer.name }}
+ neighbor {{ ibgp_peer.loopback }} update-source {{ loopback }}
 {% endfor %}
 {% endif %}
 {% if peers is defined %}
@@ -44,6 +108,18 @@ router bgp {{ dn42_asn }}
 {% for network in bgp_networks.ipv4 %}
   network {{ network.prefix }}{% if network.route_map is defined %} route-map {{ network.route_map }}{% endif %}
 
+{% endfor %}
+{% endif %}
+{% if ibgp_enabled | default(false) and intra_network_ibgp_peers is defined and ibgp_config.peer_group.address_families.ipv4_unicast | default(false) %}
+  ! Activate iBGP neighbors for IPv4
+{% for ibgp_peer in intra_network_ibgp_peers %}
+  neighbor {{ ibgp_peer.loopback }} activate
+{% if ibgp_config.peer_group.next_hop_self | default(false) %}
+  neighbor {{ ibgp_peer.loopback }} next-hop-self
+{% endif %}
+{% if ibgp_config.peer_group.soft_reconfiguration_inbound | default(false) %}
+  neighbor {{ ibgp_peer.loopback }} soft-reconfiguration inbound
+{% endif %}
 {% endfor %}
 {% endif %}
 {% if bgp_peers is defined %}
@@ -68,6 +144,18 @@ router bgp {{ dn42_asn }}
  exit-address-family
  !
  address-family ipv6 unicast
+{% if ibgp_enabled | default(false) and intra_network_ibgp_peers is defined and ibgp_config.peer_group.address_families.ipv6_unicast | default(false) %}
+  ! Activate iBGP neighbors for IPv6
+{% for ibgp_peer in intra_network_ibgp_peers %}
+  neighbor {{ ibgp_peer.loopback }} activate
+{% if ibgp_config.peer_group.next_hop_self | default(false) %}
+  neighbor {{ ibgp_peer.loopback }} next-hop-self
+{% endif %}
+{% if ibgp_config.peer_group.soft_reconfiguration_inbound | default(false) %}
+  neighbor {{ ibgp_peer.loopback }} soft-reconfiguration inbound
+{% endif %}
+{% endfor %}
+{% endif %}
 {% if peers is defined %}
 {% for peer in peers %}
   neighbor {{ peer.peer_address }} activate
@@ -79,8 +167,53 @@ router bgp {{ dn42_asn }}
  exit-address-family
 exit
 !
+{% if isis_enabled | default(false) %}
 router isis DN42
+ net {{ isis_config.area_id | default('49') }}.0000.0000.{{ '%04d' | format(loopback.split('.')[-1] | int) }}.00
+ is-type {{ isis_config.is_type | default('level-2-only') }}
+ metric-style {{ isis_config.metric_style | default('wide') }}
+{% if segment_routing_enabled | default(false) %}
+ segment-routing on
+{% if segment_routing_config.srgb_start is defined and segment_routing_config.srgb_end is defined %}
+ segment-routing global-block {{ segment_routing_config.srgb_start }} {{ segment_routing_config.srgb_end }}
+{% endif %}
+ segment-routing node-msd {{ segment_routing_config.node_msd | default(8) }}
+{% if segment_routing_config.index_method == 'last_octet' %}
+ segment-routing prefix {{ loopback }}/32 index {{ loopback.split('.')[-1] }}{% if segment_routing_config.explicit_null | default(true) %} explicit-null{% endif %}
+
+{% elif segment_routing_config.index_method == 'manual' and segment_routing_index is defined %}
+ segment-routing prefix {{ loopback }}/32 index {{ segment_routing_index }}{% if segment_routing_config.explicit_null | default(true) %} explicit-null{% endif %}
+
+{% endif %}
+{% endif %}
 exit
+{% endif %}
+!
+{% if ospf_enabled | default(false) %}
+router ospf
+ ospf router-id {{ bgp_router_id | default(loopback) }}
+{% if ospf_config.reference_bandwidth is defined %}
+ auto-cost reference-bandwidth {{ ospf_config.reference_bandwidth }}
+{% endif %}
+{% if ospf_config.log_adjacency_changes | default(true) %}
+ log-adjacency-changes
+{% endif %}
+{% if segment_routing_enabled | default(false) %}
+ segment-routing on
+{% if segment_routing_config.srgb_start is defined and segment_routing_config.srgb_end is defined %}
+ segment-routing global-block {{ segment_routing_config.srgb_start }} {{ segment_routing_config.srgb_end }}
+{% endif %}
+ segment-routing node-msd {{ segment_routing_config.node_msd | default(8) }}
+{% if segment_routing_config.index_method == 'last_octet' %}
+ segment-routing prefix {{ loopback }}/32 index {{ loopback.split('.')[-1] }}{% if segment_routing_config.explicit_null | default(true) %} explicit-null{% endif %}
+
+{% elif segment_routing_config.index_method == 'manual' and segment_routing_index is defined %}
+ segment-routing prefix {{ loopback }}/32 index {{ segment_routing_index }}{% if segment_routing_config.explicit_null | default(true) %} explicit-null{% endif %}
+
+{% endif %}
+{% endif %}
+exit
+{% endif %}
 !
 {% if ip_prefix_lists is defined %}
 {% for prefix_list in ip_prefix_lists %}

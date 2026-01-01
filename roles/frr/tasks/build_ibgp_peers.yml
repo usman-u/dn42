@@ -1,0 +1,24 @@
+---
+# Build iBGP full mesh peer list
+
+- name: Initialize iBGP peers list
+  set_fact:
+    intra_network_ibgp_peers: []
+
+- name: Build iBGP full mesh peers
+  set_fact:
+    intra_network_ibgp_peers: "{{ intra_network_ibgp_peers + [peer_info] }}"
+  vars:
+    peer_info:
+      name: "{{ item }}"
+      loopback: "{{ hostvars[item].loopback }}"
+  loop: "{{ ibgp_mesh | default([]) }}"
+  when:
+    - ibgp_mesh is defined
+    - item != inventory_hostname
+    - ibgp_enabled | default(false)
+
+- name: Debug iBGP peers
+  debug:
+    var: intra_network_ibgp_peers
+  when: intra_network_ibgp_peers is defined and (intra_network_ibgp_peers | length > 0)

@@ -180,25 +180,149 @@
         }
       }
     },
-    "ibgp_mesh_enabled": {
+    "ibgp_enabled": {
       "type": "boolean",
-      "description": "Enable iBGP mesh between routers"
+      "description": "Enable iBGP full mesh between all routers"
     },
-    "mesh_routers": {
+    "ibgp_config": {
+      "type": "object",
+      "description": "iBGP configuration parameters",
+      "properties": {
+        "timers": {
+          "type": "object",
+          "description": "iBGP keepalive and holdtime timers",
+          "properties": {
+            "keepalive": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535,
+              "description": "Keepalive interval in seconds (default: 60)"
+            },
+            "holdtime": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 65535,
+              "description": "Holdtime in seconds (default: 180, must be >= 3x keepalive)"
+            }
+          }
+        },
+        "route_reflector_enabled": {
+          "type": "boolean",
+          "description": "Enable route reflection for hierarchical design (default: false)"
+        },
+        "bfd_enabled": {
+          "type": "boolean",
+          "description": "Enable BFD for fast failure detection (default: false)"
+        }
+      }
+    },
+    "ibgp_mesh": {
       "type": "array",
-      "description": "List of routers in iBGP mesh",
+      "description": "List of router hostnames participating in iBGP full mesh. Loopback addresses are pulled from host_vars.",
+      "items": {
+        "type": "string",
+        "description": "Router hostname (must match inventory hostname)"
+      }
+    },
+    "isis_enabled": {
+      "type": "boolean",
+      "description": "Enable IS-IS routing protocol"
+    },
+    "isis_config": {
+      "type": "object",
+      "description": "IS-IS configuration parameters",
+      "properties": {
+        "area_id": {
+          "type": "string",
+          "pattern": "^[0-9]{2}$",
+          "description": "IS-IS area ID (default: 49)"
+        },
+        "is_type": {
+          "type": "string",
+          "enum": ["level-1", "level-2-only", "level-1-2"],
+          "description": "IS-IS router level (default: level-2-only)"
+        },
+        "metric_style": {
+          "type": "string",
+          "enum": ["narrow", "wide", "transition"],
+          "description": "IS-IS metric style (default: wide)"
+        },
+        "circuit_type": {
+          "type": "string",
+          "enum": ["level-1", "level-2-only", "level-1-2"],
+          "description": "Circuit type for P2P links (default: level-2-only)"
+        }
+      }
+    },
+    "segment_routing_enabled": {
+      "type": "boolean",
+      "description": "Enable Segment Routing (SR-MPLS)"
+    },
+    "segment_routing_config": {
+      "type": "object",
+      "description": "Segment Routing configuration parameters",
+      "properties": {
+        "srgb_start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1048575,
+          "description": "SRGB start label (MUST be identical on all routers, default: 16000)"
+        },
+        "srgb_end": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1048575,
+          "description": "SRGB end label (MUST be identical on all routers, default: 23999)"
+        },
+        "node_msd": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32,
+          "description": "Maximum SID Depth - max labels in MPLS stack (default: 8)"
+        },
+        "explicit_null": {
+          "type": "boolean",
+          "description": "Use explicit-null labels for better traceroute (default: true)"
+        },
+        "index_method": {
+          "type": "string",
+          "enum": ["last_octet", "manual"],
+          "description": "Prefix SID index calculation method. 'last_octet': use last octet of loopback (e.g., .161 → index 161 → label srgb_start+161). 'manual': use segment_routing_index from host_vars. (default: last_octet)"
+        }
+      }
+    },
+    "intra_network_tunnels": {
+      "type": "array",
+      "description": "Intra-network WireGuard tunnels for iBGP + IS-IS",
       "items": {
         "type": "object",
-        "required": ["name", "loopback"],
+        "required": ["routers", "port"],
         "properties": {
-          "name": {
-            "type": "string",
-            "description": "Router hostname"
+          "routers": {
+            "type": "array",
+            "description": "Pair of routers to connect",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string",
+              "description": "Router hostname"
+            }
           },
-          "loopback": {
-            "type": "string",
-            "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}$",
-            "description": "Loopback IPv4 address"
+          "port": {
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": ["auto"],
+                "description": "Auto-generate port from sum of last octets of loopbacks + 5000"
+              },
+              {
+                "type": "integer",
+                "minimum": 1024,
+                "maximum": 65535,
+                "description": "Explicit port number"
+              }
+            ],
+            "description": "WireGuard listen port. Use 'auto' to generate from loopback addresses, or specify explicit port number."
           }
         }
       }

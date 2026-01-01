@@ -4,10 +4,19 @@
 
 - name: Setup passwordless sudo for automation user
   hosts: routers
-  gather_facts: false
+  gather_facts: true
   become: false
 
   tasks:
+    - name: Check if running as root
+      debug:
+        msg: "Already running as root, skipping sudo setup"
+      when: ansible_user_id == 'root'
+
+    - name: Exit playbook if already root
+      meta: end_host
+      when: ansible_user_id == 'root'
+
     - name: Prompt for sudo password
       pause:
         prompt: "Enter your sudo password for {{ inventory_hostname }}"
@@ -24,31 +33,6 @@
         content: |
           {{ ansible_user }} ALL=(ALL) NOPASSWD: ALL
         dest: "/etc/sudoers.d/{{ ansible_user }}"
-        mode: '0440'
-        owner: root
-        group: root
-        validate: 'visudo -cf %s'
-
-    - name: Add user to frr group
-      become: true
-      become_method: sudo
-      vars:
-        ansible_become_password: "{{ sudo_password.user_input }}"
-      user:
-        name: "{{ ansible_user }}"
-        groups: frr
-        append: true
-
-    - name: Allow user to run vtysh without password
-      become: true
-      become_method: sudo
-      vars:
-        ansible_become_password: "{{ sudo_password.user_input }}"
-      copy:
-        content: |
-          # Allow {{ ansible_user }} to run vtysh without password
-          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/vtysh
-        dest: /etc/sudoers.d/frr-vtysh
         mode: '0440'
         owner: root
         group: root

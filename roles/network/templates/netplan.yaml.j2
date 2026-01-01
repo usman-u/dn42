@@ -1,0 +1,40 @@
+network:
+  ethernets:
+{% for iface in network_config.interfaces %}
+    {{ iface.name }}:
+{% if iface.addresses is defined %}
+      addresses:
+{% for addr in iface.addresses %}
+      - {{ addr }}
+{% endfor %}
+{% endif %}
+{% if iface.dhcp is defined and iface.dhcp %}
+      dhcp4: true
+{% endif %}
+{% if iface.nameservers is defined %}
+      nameservers:
+        addresses:
+{% for ns in iface.nameservers %}
+        - {{ ns }}
+{% endfor %}
+{% if iface.search_domains is defined %}
+        search:
+{% for domain in iface.search_domains %}
+        - {{ domain }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% if iface.gateway is defined %}
+      routes:
+      - to: default
+        via: {{ iface.gateway }}
+{% endif %}
+{% if iface.routes is defined %}
+      routes:
+{% for route in iface.routes %}
+      - to: {{ route.to }}
+        via: {{ route.via }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+  version: 2

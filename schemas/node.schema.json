@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "DN42 Node Configuration Schema",
+  "description": "Per-host configuration. All parameters from global.yml can be overridden here (isis_enabled, isis_config, segment_routing_enabled, segment_routing_config, ibgp_enabled, ibgp_config, static_routes, ip_prefix_lists, ipv6_prefix_lists, bgp_community_lists, bgp_large_community_lists, bgp_as_path_acls, route_maps, wg_defaults).",
   "type": "object",
   "required": ["fqdn", "loopback", "dn42_region", "iso_3166_country_code", "ingress_bgp_large_community"],
   "properties": {
@@ -13,6 +14,10 @@
       "type": "string",
       "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}$",
       "description": "Loopback IPv4 address for BGP router-id"
+    },
+    "wan_ip": {
+      "type": "string",
+      "description": "Public/WAN IP address for intra-network WireGuard tunnels"
     },
     "dn42_region": {
       "type": "string",
@@ -40,10 +45,79 @@
     },
     "netplan_config": {
       "type": "object",
-      "description": "Netplan network configuration (YAML structure)",
+      "description": "DEPRECATED: Use network_config instead. Old netplan-specific configuration",
       "properties": {
         "network": {
           "type": "object"
+        }
+      }
+    },
+    "network_config": {
+      "type": "object",
+      "description": "OS-agnostic network configuration",
+      "required": ["interfaces"],
+      "properties": {
+        "interfaces": {
+          "type": "array",
+          "description": "Network interface configurations",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Interface name (e.g., enp1s0, eth0)"
+              },
+              "addresses": {
+                "type": "array",
+                "description": "List of IP addresses in CIDR notation",
+                "items": {
+                  "type": "string",
+                  "description": "IP address with netmask (e.g., 192.168.1.10/24)"
+                }
+              },
+              "dhcp": {
+                "type": "boolean",
+                "description": "Enable DHCP for this interface"
+              },
+              "gateway": {
+                "type": "string",
+                "description": "Default gateway IP address"
+              },
+              "nameservers": {
+                "type": "array",
+                "description": "DNS nameserver IP addresses",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "search_domains": {
+                "type": "array",
+                "description": "DNS search domains",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "routes": {
+                "type": "array",
+                "description": "Additional static routes",
+                "items": {
+                  "type": "object",
+                  "required": ["to", "via"],
+                  "properties": {
+                    "to": {
+                      "type": "string",
+                      "description": "Destination network (e.g., 0.0.0.0/0, 192.168.2.0/24)"
+                    },
+                    "via": {
+                      "type": "string",
+                      "description": "Gateway IP address"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

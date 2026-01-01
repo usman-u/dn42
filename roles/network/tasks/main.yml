@@ -1,0 +1,14 @@
+---
+# Network role: OS-agnostic network configuration
+
+- name: Configure network for Ubuntu (netplan)
+  include_tasks: netplan.yml
+  when:
+    - ansible_distribution == "Ubuntu"
+    - network_config is defined
+
+- name: Configure network for Debian (interfaces)
+  include_tasks: interfaces.yml
+  when:
+    - ansible_distribution == "Debian"
+    - network_config is defined
