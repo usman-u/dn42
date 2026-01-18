@@ -21,8 +21,8 @@ interface lo
 {% endif %}
 exit
 !
-{% if isis_enabled | default(false) and intra_network_wg_configs is defined %}
-{% for wg in intra_network_wg_configs %}
+{% if isis_enabled | default(false) and wireguard_intra_network_configs is defined %}
+{% for wg in wireguard_intra_network_configs %}
 interface {{ wg.interface_name }}
  ip address {{ wg.address.split(',')[0].strip() }}
  ipv6 address {{ wg.address.split(',')[1].strip() }}
@@ -34,8 +34,28 @@ exit
 !
 {% endfor %}
 {% endif %}
-{% if ospf_enabled | default(false) and intra_network_wg_configs is defined %}
-{% for wg in intra_network_wg_configs %}
+{% if ospf_enabled | default(false) and frr_gre_tunnel_configs is defined %}
+{% for gre in frr_gre_tunnel_configs %}
+interface {{ gre.interface_name }}
+ ip address {{ gre.tunnel_address }}
+ ip ospf area {{ ospf_config.area_id | default('0.0.0.0') }}
+ ip ospf network point-to-point
+{% if gre.ospf_cost is defined %}
+ ip ospf cost {{ gre.ospf_cost }}
+{% endif %}
+{% if ospf_config.hello_interval is defined %}
+ ip ospf hello-interval {{ ospf_config.hello_interval }}
+{% endif %}
+{% if ospf_config.dead_interval is defined %}
+ ip ospf dead-interval {{ ospf_config.dead_interval }}
+{% endif %}
+ mpls enable
+exit
+!
+{% endfor %}
+{% elif ospf_enabled | default(false) and wireguard_intra_network_configs is defined %}
+{# Fallback to WireGuard configs if GRE not configured #}
+{% for wg in wireguard_intra_network_configs %}
 interface {{ wg.interface_name }}
  ip address {{ wg.address.split(',')[0].strip() }}
  ipv6 address {{ wg.address.split(',')[1].strip() }}
@@ -85,8 +105,8 @@ router bgp {{ dn42_asn }}
 {% endif %}
 {% endfor %}
 {% endif %}
-{% if ibgp_enabled | default(false) and intra_network_ibgp_peers is defined %}
-{% for ibgp_peer in intra_network_ibgp_peers %}
+{% if ibgp_enabled | default(false) and frr_ibgp_peers is defined %}
+{% for ibgp_peer in frr_ibgp_peers %}
  ! iBGP peer: {{ ibgp_peer.name }}
  neighbor {{ ibgp_peer.loopback }} peer-group {{ ibgp_config.peer_group.name }}
  neighbor {{ ibgp_peer.loopback }} description iBGP-{{ ibgp_peer.name }}
@@ -110,9 +130,9 @@ router bgp {{ dn42_asn }}
 
 {% endfor %}
 {% endif %}
-{% if ibgp_enabled | default(false) and intra_network_ibgp_peers is defined and ibgp_config.peer_group.address_families.ipv4_unicast | default(false) %}
+{% if ibgp_enabled | default(false) and frr_ibgp_peers is defined and ibgp_config.peer_group.address_families.ipv4_unicast | default(false) %}
   ! Activate iBGP neighbors for IPv4
-{% for ibgp_peer in intra_network_ibgp_peers %}
+{% for ibgp_peer in frr_ibgp_peers %}
   neighbor {{ ibgp_peer.loopback }} activate
 {% if ibgp_config.peer_group.next_hop_self | default(false) %}
   neighbor {{ ibgp_peer.loopback }} next-hop-self
@@ -144,9 +164,9 @@ router bgp {{ dn42_asn }}
  exit-address-family
  !
  address-family ipv6 unicast
-{% if ibgp_enabled | default(false) and intra_network_ibgp_peers is defined and ibgp_config.peer_group.address_families.ipv6_unicast | default(false) %}
+{% if ibgp_enabled | default(false) and frr_ibgp_peers is defined and ibgp_config.peer_group.address_families.ipv6_unicast | default(false) %}
   ! Activate iBGP neighbors for IPv6
-{% for ibgp_peer in intra_network_ibgp_peers %}
+{% for ibgp_peer in frr_ibgp_peers %}
   neighbor {{ ibgp_peer.loopback }} activate
 {% if ibgp_config.peer_group.next_hop_self | default(false) %}
   neighbor {{ ibgp_peer.loopback }} next-hop-self
@@ -198,6 +218,12 @@ router ospf
 {% if ospf_config.log_adjacency_changes | default(true) %}
  log-adjacency-changes
 {% endif %}
+{% if ospf_config.redistribute is defined %}
+{% for redist in ospf_config.redistribute %}
+ redistribute {{ redist.type }}{% if redist.route_map is defined %} route-map {{ redist.route_map }}{% endif %}
+
+{% endfor %}
+{% endif %}
 {% if segment_routing_enabled | default(false) %}
  segment-routing on
 {% if segment_routing_config.srgb_start is defined and segment_routing_config.srgb_end is defined %}
@@ -212,6 +238,18 @@ router ospf
 
 {% endif %}
 {% endif %}
+exit
+{% endif %}
+!
+{% if frr_gre_tunnel_configs is defined and (frr_gre_tunnel_configs | length > 0) %}
+mpls ldp
+ router-id {{ loopback }}
+ address-family ipv4
+  discovery transport-address {{ loopback }}
+{% for gre in frr_gre_tunnel_configs %}
+  interface {{ gre.interface_name }}
+{% endfor %}
+ exit-address-family
 exit
 {% endif %}
 !

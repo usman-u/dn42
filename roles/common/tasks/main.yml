@@ -5,6 +5,11 @@
   include_vars: "{{ ansible_distribution | lower }}.yml"
   when: ansible_distribution | lower in ['ubuntu', 'debian']
 
+- name: Disable UFW firewall
+  ufw:
+    state: disabled
+  when: ansible_os_family == "Debian"
+
 - name: Update apt cache
   apt:
     update_cache: true
@@ -36,6 +41,29 @@
   loop:
     - net.ipv4.conf.all.rp_filter
     - net.ipv4.conf.default.rp_filter
+
+- name: Load MPLS kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+    persistent: present
+  loop:
+    - mpls_router
+    - mpls_iptunnel
+
+- name: Enable MPLS forwarding on loopback
+  sysctl:
+    name: net.mpls.conf.lo.input
+    value: "1"
+    state: present
+    reload: true
+
+- name: Set MPLS platform labels
+  sysctl:
+    name: net.mpls.platform_labels
+    value: "100000"
+    state: present
+    reload: true
 
 - name: Create DN42 system user (if needed)
   user:

@@ -1,0 +1,39 @@
+---
+# Node-specific configuration for lax-r001
+fqdn: lax-r001.usman.network
+loopback: 172.22.132.163
+wan_ip: 66.42.104.144  # Public/WAN IP for intra-network tunnels
+dn42_region: North America
+iso_3166_country_code: US
+ingress_bgp_large_community: "4242421869:99:163"
+
+# WireGuard Keys
+wg_privkey: "{{ vault_wg_privkey }}"
+wg_pubkey: "clky2212nauMG1DrNFfsrt9rAEnW1mi8hx2+icNp7i0="
+
+# Network Configuration (OS-agnostic)
+# NOTE: Commented out - using cloud-init DHCP to avoid breaking access
+# Uncomment and configure only if you need static IPs or additional interfaces
+# network_config:
+#   interfaces:
+#     - name: enp1s0
+#       dhcp: true
+#       nameservers:
+#         - 108.61.10.10
+#       search_domains:
+#         - usman.dn42
+#         - usman.network
+
+# BGP Configuration
+bgp_router_id: 172.22.132.163
+bgp_options:
+  - "bgp always-compare-med"
+
+# BGP Network Statements
+bgp_networks:
+  ipv4:
+    - prefix: "172.22.132.160/27"
+      route_map: "RM-DN42-RANGE-ORIGIN"
+
+# DN42 Peers
+peers: []

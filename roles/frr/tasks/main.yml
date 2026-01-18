@@ -9,6 +9,33 @@
   include_tasks: ../wireguard/tasks/intra_network.yml
   when: intra_network_tunnels is defined
 
+- name: Build GRE tunnel configs for FRR
+  set_fact:
+    frr_gre_tunnel_configs: "{{ frr_gre_tunnel_configs | default([]) + [tunnel_config] }}"
+  vars:
+    router_a: "{{ item.routers[0] }}"
+    router_b: "{{ item.routers[1] }}"
+    is_router_a: "{{ inventory_hostname == router_a }}"
+    peer_router: "{{ router_b if is_router_a else router_a }}"
+    location_a: "{{ router_a.split('-')[0] }}"
+    location_b: "{{ router_b.split('-')[0] }}"
+    interface_name: "gre-{{ [location_a, location_b] | sort | join('-') }}"
+    my_loopback_last: "{{ loopback.split('.')[-1] }}"
+    peer_loopback_last: "{{ hostvars[peer_router].loopback.split('.')[-1] }}"
+    router_ids_sorted: "{{ [my_loopback_last | int, peer_loopback_last | int] | sort }}"
+    my_ip_offset: "{{ 1 if (my_loopback_last | int) == (router_ids_sorted[0] | int) else 2 }}"
+    ip_third_octet: "{{ ((my_loopback_last | int) + (peer_loopback_last | int)) % 256 }}"
+    my_gre_address: "169.254.{{ ip_third_octet }}.{{ my_ip_offset }}/30"
+    tunnel_config:
+      interface_name: "{{ interface_name }}"
+      tunnel_address: "{{ my_gre_address }}"
+      ospf_cost: "{{ item.ospf_cost | default(10) }}"
+  loop: "{{ intra_network_tunnels | default([]) }}"
+  when:
+    - intra_network_tunnels is defined
+    - inventory_hostname in item.routers
+    - item.encryption is defined  # GRE tunnels have encryption field
+
 - name: Install FRR
   apt:
     name:

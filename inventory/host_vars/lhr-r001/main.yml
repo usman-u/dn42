@@ -3,6 +3,8 @@
 fqdn: uk-lon3.usman.network
 loopback: 172.22.132.161
 wan_ip: uk-lon3.usman.network
+# Local IP for GRE tunnels (private IP when behind NAT)
+gre_local_ip: 10.0.10.251
 dn42_region: Europe
 iso_3166_country_code: GB
 ingress_bgp_large_community: "4242421869:99:161"

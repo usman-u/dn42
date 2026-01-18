@@ -1,0 +1,7 @@
+---
+# GRE Tunnel Configuration for Intra-network (iBGP + OSPF + MPLS/LDP)
+# GRE is required for MPLS - WireGuard cannot carry MPLS labels (no L2 header)
+
+- name: Include GRE tunnel configuration tasks
+  ansible.builtin.include_tasks: tunnels.yml
+  when: intra_network_tunnels is defined and (intra_network_tunnels | length > 0)

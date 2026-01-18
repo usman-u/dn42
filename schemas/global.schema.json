@@ -293,10 +293,10 @@
     },
     "intra_network_tunnels": {
       "type": "array",
-      "description": "Intra-network WireGuard tunnels for iBGP + IS-IS",
+      "description": "Intra-network GRE tunnels for iBGP + OSPF + MPLS/LDP. GRE is required because WireGuard cannot carry MPLS labels (no L2 header).",
       "items": {
         "type": "object",
-        "required": ["routers", "port"],
+        "required": ["routers"],
         "properties": {
           "routers": {
             "type": "array",
@@ -308,21 +308,38 @@
               "description": "Router hostname"
             }
           },
-          "port": {
+          "ospf_cost": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "OSPF interface cost. Use average RTT latency in milliseconds for latency-based routing."
+          },
+          "mtu": {
+            "type": "integer",
+            "minimum": 576,
+            "maximum": 9000,
+            "default": 1400,
+            "description": "GRE tunnel MTU. Default 1400 allows headroom for MPLS labels over typical 1500-byte Internet MTU."
+          },
+          "encryption": {
+            "type": "string",
+            "enum": ["none", "gre_key"],
+            "description": "Encryption/authentication method. 'gre_key' adds a 32-bit key to GRE header for basic authentication."
+          },
+          "gre_key": {
             "oneOf": [
               {
-                "type": "string",
-                "enum": ["auto"],
-                "description": "Auto-generate port from sum of last octets of loopbacks + 5000"
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4294967295
               },
               {
-                "type": "integer",
-                "minimum": 1024,
-                "maximum": 65535,
-                "description": "Explicit port number"
+                "type": "string",
+                "pattern": "^\\{\\{.*\\}\\}$",
+                "description": "Jinja2 template reference to vault variable"
               }
             ],
-            "description": "WireGuard listen port. Use 'auto' to generate from loopback addresses, or specify explicit port number."
+            "description": "32-bit GRE key for tunnel authentication. Can be an integer or a Jinja2 reference to a vault variable (e.g., '{{ vault_gre_key }}')."
           }
         }
       }

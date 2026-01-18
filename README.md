@@ -4,7 +4,11 @@ Ansible-based Infrastructure as Code for DN42 BGP routers running FRR (BGP + OSP
 
 ## Network Topology
 
-![Network Topology](topology.png)
+### Geographic View - Internal Network
+![Geographic Topology](topology-geo.png)
+
+### Logical View - Full Network
+![Logical Topology](topology-logical.png)
 
 *To regenerate: `uv run python scripts/generate_topology.py`*
 
@@ -30,7 +34,9 @@ When multiple routes share the same LOCAL_PREF and AS_PATH length, the tie-break
 
 Transit is not currently provided.
 
-## Quick Start
+---
+
+## Ansible
 
 ### Prerequisites
 
@@ -278,6 +284,22 @@ Configuration validation happens automatically before deployment:
 
 Failed validation prevents deployment.
 
+## NAT Configuration
+
+Source NAT is configured on lhr-r001 to enable internal networks to access DN42:
+
+```bash
+# NAT rule on lhr-r001
+sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/16 -d 172.20.0.0/14 -j SNAT --to-source 172.22.132.161
+```
+
+**Configuration:**
+- Traffic from `10.0.0.0/16` (internal networks) → `172.20.0.0/14` (DN42) is SNATed to `172.22.132.161` (lhr-r001's loopback)
+- NAT rules persist via `/etc/iptables/rules.v4` and `/etc/network/if-pre-up.d/iptables`
+- ERX receives DN42 routes via BGP and forwards to lhr-r001, which performs NAT
+
+**Note:** NAT is not managed by Ansible - it's manually configured on lhr-r001.
+
 ## Verification Commands
 
 ### iBGP Status
@@ -344,24 +366,6 @@ sudo vtysh -c "show bgp ipv4 unicast 172.20.0.0/24"
 ```
 
 ## Troubleshooting
-
-### Configuration Not Applied
-
-1. Check Ansible facts:
-```bash
-ansible <hostname> -m setup
-```
-
-2. Verify variable precedence:
-```bash
-ansible-inventory --host <hostname> --yaml
-```
-
-3. Check handlers were notified:
-```bash
-ansible-playbook playbooks/site.yml -vv
-```
-
 ### WireGuard Tunnel Not Working
 
 1. Verify peer keys:
@@ -377,18 +381,6 @@ ping <peer_wan_ip>
 3. Verify firewall allows UDP port:
 ```bash
 sudo netstat -ulnp | grep <port>
-```
-
-### BGP Session Down
-
-1. Check interface status:
-```bash
-ip -6 addr show | grep fe80::1869
-```
-
-2. Verify reachability:
-```bash
-ping6 -I wg-ewr-lhr fe80::1869:162
 ```
 
 3. Check FRR logs:

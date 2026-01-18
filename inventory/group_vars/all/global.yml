@@ -34,6 +34,12 @@ ip_prefix_lists:
     prefix: "172.20.0.0/14"
     ge: 14
     le: 32
+  - name: PL-INTERLINKS
+    seq: 5
+    action: permit
+    prefix: "169.254.0.0/16"
+    ge: 30
+    le: 31
 
 # IPv6 Prefix Lists
 ipv6_prefix_lists:
@@ -58,18 +64,46 @@ bgp_large_community_lists:
 
 
 
-# Intra-network WireGuard tunnels (for iBGP + OSPF)
-# Port can be "auto" (generates from loopback octets) or explicit number
+# Intra-network GRE tunnels (for iBGP + OSPF + MPLS/LDP)
+# GRE is required for MPLS - as WireGuard cannot carry MPLS labels (no L2 header)
 intra_network_tunnels:
   - routers: [lhr-r001, ewr-r001]
-    port: auto
+    ospf_cost: 78
+    mtu: 1400
+    encryption: gre_key
+    gre_key: "{{ vault_gre_key_lhr_ewr }}"
+  - routers: [ewr-r001, lax-r001]
+    ospf_cost: 58
+    mtu: 1400
+    encryption: gre_key
+    gre_key: "{{ vault_gre_key_ewr_lax }}"
+  - routers: [lhr-r001, frk-r001]
+    ospf_cost: 15
+    mtu: 1400
+    encryption: gre_key
+    gre_key: "{{ vault_gre_key_lhr_frk }}"
+  - routers: [lhr-r001, sgx-r001]
+    ospf_cost: 170
+    mtu: 1400
+    encryption: gre_key
+    gre_key: "{{ vault_gre_key_lhr_sgx }}"
+  - routers: [frk-r001, sgx-r001]
+    ospf_cost: 160
+    mtu: 1400
+    encryption: gre_key
+    gre_key: "{{ vault_gre_key_frk_sgx }}"
+  - routers: [sgx-r001, lax-r001]
+    ospf_cost: 150
+    mtu: 1400
+    encryption: gre_key
+    gre_key: "{{ vault_gre_key_sgx_lax }}"
 
 # iBGP Configuration - Full Mesh
 ibgp_enabled: true
 ibgp_config:
   timers:
-    keepalive: 60
-    holdtime: 180
+    keepalive: 2
+    holdtime: 10
   route_reflector_enabled: false
   bfd_enabled: false
 
@@ -87,16 +121,19 @@ ibgp_config:
 ibgp_mesh:
   - lhr-r001
   - ewr-r001
+  - lax-r001
+  - frk-r001
+  - sgx-r001
 
 # IS-IS Configuration
 # NOTE: IS-IS cannot work over WireGuard (Layer 2 vs Layer 3 incompatibility)
 # WireGuard uses TUN devices (L3 only), IS-IS requires pfpacket (L2 frames)
-isis_enabled: false
-isis_config:
-  area_id: "49"
-  is_type: "level-2-only"
-  metric_style: "wide"
-  circuit_type: "level-2-only"
+# isis_enabled: false
+# isis_config:
+#   area_id: "49"
+#   is_type: "level-2-only"
+#   metric_style: "wide"
+#   circuit_type: "level-2-only"
 
 # OSPF Configuration (working - IS-IS incompatible with WireGuard)
 ospf_enabled: true
@@ -104,8 +141,11 @@ ospf_config:
   area_id: "0.0.0.0"  # Backbone area
   reference_bandwidth: 100000  # 100 Gbps for proper cost calculation
   log_adjacency_changes: true
-  hello_interval: 3
+  hello_interval: 1
   dead_interval: 10
+  redistribute:
+    - type: connected
+      route_map: RM-REDIST-INTERLINKS
 
 # # Segment Routing Configuration
 # segment_routing_enabled: true
@@ -156,5 +196,13 @@ route_maps:
         action: permit
         match_ipv6_prefix_list: DN42-ALL-V6
         match_large_community: LCL-USMAN-EXPORT
+      - seq: 500
+        action: deny
+
+  - name: RM-REDIST-INTERLINKS
+    entries:
+      - seq: 10
+        action: permit
+        match_prefix_list: PL-INTERLINKS
       - seq: 500
         action: deny

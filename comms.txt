@@ -1,0 +1,1057 @@
+  4242423035 4242423128
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422663 4242423088 4242423914 4242422900
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, best (First path received)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422717 4242420251
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422717 4242420251
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:1 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421588 4242423505
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Community: 64511:3 64511:22 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 4242421588 4242423505
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421080 4242423309
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:23 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420590 4242423309
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423035 4242423941
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423941
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420253 4242422005
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421117 4242422005
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423922
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423922
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421080 4242423797 4242423957
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external
+      Community: 64511:23 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423797 4242423957
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422189 4242421944
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:1 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 18:12:13 2026
+  4242423035 4242422189 4242421944
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:1 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 18:13:15 2026
+  4242423914 4242422923 4242422800
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:5 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422923 4242422800
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:2 64511:25 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422547 4242420602
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:1 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421816 4242420602
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422189 4242422363
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:3 64511:25 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 18:15:52 2026
+  4242423035 4242422189 4242422363
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:3 64511:25 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 18:15:52 2026
+  4242423914 4242421534
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 210, valid, external, best (MED)
+      Community: 64511:41 64511:1276
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421534
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 210, valid, external
+      Community: 64511:41 64511:1276
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420906
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242420906
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420585 4242421877
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:4 64511:25 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421592 4242421877
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:3 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 64719 4242420970
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:6 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 64719 4242420970
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:5 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421588 4242421168
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 210, valid, external, best (MED)
+      Community: 64511:41
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423088 4242421168
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 210, valid, external
+      Community: 64511:41
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422370
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242422370
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422042
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242422042
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420585
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 230, valid, external, best (MED)
+      Community: 64511:1 64511:25 64511:34 64511:41 64511:1826
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420585
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 230, valid, external
+      Community: 64511:2 64511:25 64511:34 64511:41 64511:1826
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423077
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin incomplete, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423077
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin incomplete, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421806
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420207 4242421806
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422575
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 210, valid, external, best (MED)
+      Community: 64511:2 64511:24 64511:34 64511:41
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422575
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 210, valid, external
+      Community: 64511:3 64511:24 64511:34 64511:41
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422601 64633
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 64633
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420198
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242420198
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420985
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 210, valid, external, best (MED)
+      Community: 64511:41 64511:1528
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420985
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 210, valid, external
+      Community: 64511:41 64511:1528
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422868
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242422868
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421080 4242421516
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:23 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422225 4242421516
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:4 64511:25 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423402
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423402
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421411
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421411
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:3 64511:25 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421733
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Community: 64511:3 64511:25 64511:34 64511:44 64511:1840
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242421733
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:3 64511:25 64511:34 64511:44 64511:1840
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422663 4242423088 4242422464 4242423914 64719 4242423303
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, best (First path received)
+      Community: 64511:6 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422016
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 230, valid, external, best (MED)
+      Community: 64511:1 64511:24 64511:34 64511:41 64511:1826
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422016
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 230, valid, external
+      Community: 64511:1 64511:24 64511:34 64511:41 64511:1826
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421955 4242420134
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421955 4242420134
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420501
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242420501
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421240 4242421024
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421240 4242421024
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422225 4242421271
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:6 64511:24 64511:33
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422225 4242421271
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:4 64511:24 64511:33
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420705
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242420705
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421019
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin incomplete, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242421019
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin incomplete, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421967
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242421967
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422601 64633 4242421976
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 64633 4242421976
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422601 76190 4242421102
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 76190 4242421102
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421955 4242421955
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421955 4242421955
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421955 4242421955
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421955 4242421955
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421588
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 4242421588
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422189 4242423508
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external
+      Community: 64511:3 64511:24 64511:34 64511:44 64511:1840
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 18:17:01 2026
+  4242423035 4242423508
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, best (AS Path)
+      Community: 64511:4 64511:24 64511:34 64511:44 64511:1840
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422288
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242422288
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422027
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242422027
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423626
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423626
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422027
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242422027
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420128
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 210, valid, external, best (AS Path)
+      Community: 64511:2 64511:24 64511:34 64511:41 64511:1276
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242420128
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 210, valid, external
+      Community: 64511:2 64511:24 64511:34 64511:41 64511:1276
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421588 4242422634, (aggregated by 4242422634 172.23.224.161)
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, atomic-aggregate, best (AS Path)
+      Community: 64511:24 64511:34 64511:42 64511:1840
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 4242421588 4242422634, (aggregated by 4242422634 172.23.224.161)
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, atomic-aggregate
+      Community: 64511:42 64511:1840
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423999 4242421999 4242420398 4242423088 204844
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423999 4242421999 4242420398 4242423088 204844
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422558 4242420002
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:2 64511:23 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422558 4242420002
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:2 64511:23 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420810
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242420810
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420424
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420424
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423088 4242423495
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423088 4242423495
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423999 4242420207 4242420298 4242423914 4242421777 4242422244
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, best (First path received)
+      Community: 64511:4 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420401 4242422717 4242420207 4242420298 4242420387 4242422034 4242422189 4242420566 4242423914 4242421777 4242422244
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, best (First path received)
+      Community: 64511:4 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421033
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 210, valid, external, best (Local Pref)
+      Community: 64511:3 64511:25 64511:34 64511:41
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421033
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:4 64511:25 64511:34 64511:44
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422306 4242421312
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Community: 64511:1 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242422306 4242421312
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:1 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421777
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242421777
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422601 76190
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 76190
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422601 76190
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 76190
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420267
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242420267
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420207 4242420790
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420207 4242420790
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421588 4242421836 4242420064
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Community: 64511:3 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242422601 4242421588 4242421836 4242420064
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421906
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242421906
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421830
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420207 4242421830
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423823
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Community: 64511:1643
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420207 4242423823
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:1643
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420874
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420874
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:2 64511:25 64511:34 64511:1276
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242421816
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421816
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423054
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423054
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423054
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423054
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423054
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423054
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423054
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423054
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423054
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423054
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423054
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423054
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423311
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242423311
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420298 4242423311
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:4 64511:24 64511:34 64511:52 64511:1156
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242421534 4242423311
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:52 64511:1156
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420401 4242422717 4242420207 4242420298 4242420555 4242422034 4242421240 4242422189 4242423914 4242422709
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external, best (First path received)
+      Community: 64511:4 64511:24 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420247
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242420247
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242420600
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242420600
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242422151
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (AS Path)
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423035 4242423914 4242422151
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:44:59 2026
+  4242423914 4242423011 4242423733
+    :: from fe80::ade0 (172.20.53.104)
+    (fe80::ade0) (used)
+      Origin IGP, metric 3600, localpref 100, valid, external, best (MED)
+      Community: 64511:5 64511:25 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:58:56 2026
+  4242423035 4242423011 4242423733
+    :: from fe80::3035:138 (172.22.125.138)
+    (fe80::3035:138) (used)
+      Origin IGP, metric 4000, localpref 100, valid, external
+      Community: 64511:5 64511:25 64511:34
+      Large Community: 4242421869:99:161
+      Last update: Sat Jan 17 17:58:56 2026
+
+Displayed  878 routes and 1719 total paths
+lhr-r001#

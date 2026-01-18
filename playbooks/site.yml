@@ -33,6 +33,9 @@
     - role: wireguard
       tags: ['wireguard', 'wg']
 
+    - role: gre
+      tags: ['gre', 'tunnels', 'mpls']
+
     - role: frr
       tags: ['frr', 'bgp', 'routing']
 

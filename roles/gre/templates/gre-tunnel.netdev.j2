@@ -1,0 +1,15 @@
+# GRE tunnel: {{ item.interface_name }}
+# Peer: {{ item.peer_name }} ({{ item.remote_ip }})
+# Managed by Ansible - DO NOT EDIT
+[NetDev]
+Name={{ item.interface_name }}
+Kind=gre
+MTUBytes={{ item.mtu }}
+
+[Tunnel]
+Local={{ item.local_ip }}
+Remote={{ item.remote_ip }}
+TTL=64
+{% if item.gre_key is defined %}
+Key={{ item.gre_key }}
+{% endif %}

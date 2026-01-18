@@ -1,0 +1,12 @@
+# GRE tunnel network config: {{ item.interface_name }}
+# Peer: {{ item.peer_name }} ({{ item.remote_ip }})
+# Managed by Ansible - DO NOT EDIT
+[Match]
+Name={{ item.interface_name }}
+
+[Network]
+Address={{ item.tunnel_address }}
+MPLS=yes
+
+[Link]
+MTUBytes={{ item.mtu }}

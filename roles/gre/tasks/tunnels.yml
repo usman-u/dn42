@@ -1,0 +1,170 @@
+---
+# Build GRE tunnel configuration for this host
+
+# Clean up old WireGuard intra-network interfaces (replaced by GRE)
+- name: Find old WireGuard intra-network interfaces
+  ansible.builtin.shell: "ip link show | grep -oE 'wg-[a-z]+-[a-z]+' | sort -u || true"
+  register: old_wg_interfaces
+  changed_when: false
+
+- name: Remove old WireGuard intra-network interfaces
+  ansible.builtin.command: "ip link delete {{ item }}"
+  loop: "{{ old_wg_interfaces.stdout_lines }}"
+  when: old_wg_interfaces.stdout_lines | length > 0
+  register: wg_delete
+  failed_when: wg_delete.rc != 0 and 'Cannot find device' not in wg_delete.stderr
+  changed_when: wg_delete.rc == 0
+
+- name: Remove old WireGuard MPLS sysctl entries from config
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.d/99-sysctl.conf
+    regexp: "^net\\.mpls\\.conf\\.wg-.*\\.input"
+    state: absent
+  ignore_errors: true
+
+- name: Initialize GRE tunnel configs
+  ansible.builtin.set_fact:
+    gre_tunnel_configs: []
+    gre_interfaces: []
+
+- name: Build GRE tunnel configs
+  ansible.builtin.set_fact:
+    gre_tunnel_configs: "{{ gre_tunnel_configs + [tunnel_config] }}"
+    gre_interfaces: "{{ gre_interfaces + [interface_name] }}"
+  vars:
+    router_a: "{{ item.routers[0] }}"
+    router_b: "{{ item.routers[1] }}"
+    # Determine if we're router_a or router_b
+    is_router_a: "{{ inventory_hostname == router_a }}"
+    peer_router: "{{ router_b if is_router_a else router_a }}"
+
+    # Extract location codes (e.g., lhr-r001 -> lhr, ewr-r001 -> ewr)
+    location_a: "{{ router_a.split('-')[0] }}"
+    location_b: "{{ router_b.split('-')[0] }}"
+
+    # Generate interface name using location codes (sorted for consistency)
+    interface_name: "gre-{{ [location_a, location_b] | sort | join('-') }}"
+
+    # Generate addresses from loopbacks
+    my_loopback_last: "{{ loopback.split('.')[-1] }}"
+    peer_loopback_last: "{{ hostvars[peer_router].loopback.split('.')[-1] }}"
+
+    # Use sorted router IDs to ensure consistent /30 pairing: lower gets .1, higher gets .2
+    router_ids_sorted: "{{ [my_loopback_last | int, peer_loopback_last | int] | sort }}"
+    my_ip_offset: "{{ 1 if (my_loopback_last | int) == (router_ids_sorted[0] | int) else 2 }}"
+
+    # Use sum of both IDs for the third octet to make each tunnel unique
+    ip_third_octet: "{{ ((my_loopback_last | int) + (peer_loopback_last | int)) % 256 }}"
+
+    # IPv4 link-local address for the GRE interface
+    my_gre_address: "169.254.{{ ip_third_octet }}.{{ my_ip_offset }}/30"
+
+    # Determine local IP for GRE tunnel (for hosts behind NAT):
+    # - Use gre_local_ip if defined (for NAT scenarios - the private IP)
+    # - Otherwise use wan_ip if it's already an IP address
+    # - Otherwise extract first IP from network_config interfaces
+    my_local_ip: >-
+      {{ gre_local_ip | default(
+           wan_ip if (wan_ip | regex_search('^[0-9.]+$'))
+           else (network_config.interfaces[0].addresses[0] | regex_replace('/.*', ''))
+         ) }}
+
+    # Determine remote/peer public IP (what this host uses to reach the peer):
+    # - Use gre_public_ip if defined (explicit public IP for NAT hosts)
+    # - Otherwise use wan_ip (which may be a hostname - will be resolved by the kernel)
+    peer_public_ip: >-
+      {{ hostvars[peer_router].gre_public_ip | default(hostvars[peer_router].wan_ip) }}
+
+    tunnel_config:
+      interface_name: "{{ interface_name }}"
+      local_ip: "{{ my_local_ip }}"
+      remote_ip: "{{ peer_public_ip }}"
+      tunnel_address: "{{ my_gre_address }}"
+      mtu: "{{ item.mtu | default(1400) }}"
+      ospf_cost: "{{ item.ospf_cost | default(10) }}"
+      encryption: "{{ item.encryption | default('none') }}"
+      gre_key: "{{ item.gre_key | default(omit) }}"
+      peer_name: "{{ peer_router }}"
+  loop: "{{ intra_network_tunnels | default([]) }}"
+  when:
+    - intra_network_tunnels is defined
+    - inventory_hostname in item.routers
+
+- name: Debug GRE tunnel configs
+  ansible.builtin.debug:
+    var: gre_tunnel_configs
+  when: gre_tunnel_configs is defined and (gre_tunnel_configs | length > 0)
+
+# Create GRE tunnels using ip command
+# Note: remote_ip may be a hostname - we resolve it inline using getent if needed
+- name: Create GRE tunnels
+  ansible.builtin.shell: |
+    REMOTE_IP="{{ item.remote_ip }}"
+    # Check if remote_ip is already an IP address
+    if ! echo "$REMOTE_IP" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
+      # Resolve hostname to IP
+      REMOTE_IP=$(getent hosts "$REMOTE_IP" | awk '{print $1}')
+      if [ -z "$REMOTE_IP" ]; then
+        echo "Failed to resolve {{ item.remote_ip }}" >&2
+        exit 1
+      fi
+    fi
+    ip tunnel add {{ item.interface_name }} mode gre remote "$REMOTE_IP" local {{ item.local_ip }} ttl 64 {% if item.gre_key is defined %}key {{ item.gre_key }}{% endif %}
+
+  loop: "{{ gre_tunnel_configs }}"
+  register: tunnel_create
+  failed_when: tunnel_create.rc != 0 and 'File exists' not in tunnel_create.stderr
+  changed_when: tunnel_create.rc == 0
+
+- name: Set GRE tunnel MTU
+  ansible.builtin.command: "ip link set {{ item.interface_name }} mtu {{ item.mtu }}"
+  loop: "{{ gre_tunnel_configs }}"
+  changed_when: true
+
+- name: Bring up GRE tunnels
+  ansible.builtin.command: "ip link set {{ item.interface_name }} up"
+  loop: "{{ gre_tunnel_configs }}"
+  changed_when: true
+
+- name: Assign IP addresses to GRE tunnels
+  ansible.builtin.command: "ip addr add {{ item.tunnel_address }} dev {{ item.interface_name }}"
+  loop: "{{ gre_tunnel_configs }}"
+  register: addr_add
+  failed_when: addr_add.rc != 0 and 'File exists' not in addr_add.stderr and 'Address already assigned' not in addr_add.stderr
+  changed_when: addr_add.rc == 0
+
+- name: Enable MPLS input on GRE interfaces
+  ansible.posix.sysctl:
+    name: "net.mpls.conf.{{ item.interface_name }}.input"
+    value: "1"
+    state: present
+    sysctl_set: true
+    reload: false
+  loop: "{{ gre_tunnel_configs }}"
+
+# Create persistent configuration using systemd-networkd
+- name: Create systemd-networkd netdev files for GRE tunnels
+  ansible.builtin.template:
+    src: gre-tunnel.netdev.j2
+    dest: "/etc/systemd/network/50-{{ item.interface_name }}.netdev"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ gre_tunnel_configs }}"
+  notify: Restart systemd-networkd
+
+- name: Create systemd-networkd network files for GRE tunnels
+  ansible.builtin.template:
+    src: gre-tunnel.network.j2
+    dest: "/etc/systemd/network/50-{{ item.interface_name }}.network"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ gre_tunnel_configs }}"
+  notify: Restart systemd-networkd
+
+- name: Ensure systemd-networkd is enabled
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    enabled: true
+    state: started
